@@ -8,48 +8,12 @@ image = Image.open("HelloWorld.bmp")
 bwImage = image.convert('L') #convertion en nuance de gris
 
 ### II - Convertion en noir et blanc (0/1)
-"""
-Il faut convertir en nuance de gris. Il faut trouver les valeurs de gris
-la plus élevé et la plus basse. On creer ensuite une liste de 0/1,
-0 pour les valeurs basse de nuance de gris et 1 pour les hautes
-"""
 
-greyArray = array(bwImage)
-
-"""
-def findextrem (mat):
-    maxi = mat[0][0]
-    mini = mat[0][0]
-    for i in mat:
-        for j in range(1,len(mat[0])):
-            if i[j] > maxi:
-                maxi = i[j]
-            if i[j] < mini:
-                mini = i[j]
-    return maxi,mini
-
-
-extrem = (findextrem(greyArray))[0]
-
-middle = (extrem[0]-extrem[1])*2
-
-#creation de la liste faite de 0 et 1
-
-def buildbinlist (mat):
-    binList = []
-    for i in mat:
-        for j in i:
-            if mat[i][j] <= middle: #on prend le middle pour être sur de pas prendre le fond et le texte en mm temps #BUG voire greyArray et greyList
-                binList.append(0)
-            else:
-                binList.append(1)
-    return binList
-"""
-
+#TODO
 
 ### III - Decoupe
 # Decoupe des lignes
-def lineDetection(M):
+def horizontalProjection(M):
     """
     Cette fonction prend une matrice M et realise une projection horizontale des 1 sur la gauche
     Elle sépare la matrice en sous matrice qui correspondent aux lignes
@@ -79,52 +43,36 @@ def lineDetection(M):
 
 
 Mtest = [[1,0,1],[0,0,1],[1,0,0]]
-#print(lineDetection(Mtest))
+#print(horizontalProjection(Mtest))
 
 
 def lineSlice(M, originalM):
-    """
-    M : matrice ayant subis le projeté horizontale
-    originalM : matrice originale, avant le projeté horizontale
-    return : liste de matrices correspondant aux lignes d'ecriture de l'image
-    """
-    lM = len(M)
-    cM = len(M[0])
     matrixOfLines = []
     matrixOfPxl = []
-    isFullOfZero = True
 
-    for i in range(lM):
-        j = 0
-        isFullOfZero = True
-
-        #si la liste est plein de 0 alors c'est une interligne
-        while isFullOfZero and j<cM:
-            if M[i][j] == 1:
-                isFullOfZero = False
-            j += 1
-        
-        #si c'est plein on ajoute a la matrixOfPxl pour recreer la rangé de pixel
-        if not isFullOfZero:
+    #si dans la projection on a un 0 a gauche, alors tout le reste de la liste est 0 -> interligne
+    for i in range(len(M)):
+        #si on a un 1 on commence a creer une matrice
+        if M[i][0] == 1:
             matrixOfPxl.append(originalM[i])
-        else: #une interligne donc notre ligne est complete on peut tout ajouter à la matrice de lignes
-            if matrixOfPxl != []: #si la lgine de pixels d'avant n'était pas deja une interligne
-                matrixOfLines.append(matrixOfPxl)
-                matrixOfPxl = []
-        
-        #si on traite la derniere ligne qui n'est pas vide, on ajoute tout à la matrice de lignes
-        if i == lM-1 and matrixOfPxl != []:
+        #si on a un 0, on a découpé notre ligne, on ajoute la matrice correspondant à une liste de matrice
+        #il faut quand meme prendre en compte le cas ou on a plusieurs lignes vide et ne pas ajouter de liste vide
+        elif M[i][0] == 0 and matrixOfPxl != []:
             matrixOfLines.append(matrixOfPxl)
+            matrixOfPxl = []
+    #on ajoute la fin si la matrice de pxl n'est pas vide
+    if matrixOfPxl != []:
+        matrixOfLines.append(matrixOfPxl)
 
     return matrixOfLines
 
 
 Mtest = [[0,0,1],[0,0,1],[0,0,0],[0,0,0],[1,0,0],[1,0,0],[0,0,0],[1,1,1],[1,1,1]]
-#print(lineSlice(lineDetection(Mtest), Mtest))
+#print(lineSlice(horizontalProjection(Mtest), Mtest))
 
 
 # Decoupe des char (meme technique mais en projeté verticale)
-def charDetection(M):
+def verticalProjection(M):
     """
     Réalise la projection verticale de 1 pour isoler les characteres
     M : Matrice correspondant à une ligne de texte
@@ -152,89 +100,45 @@ def charDetection(M):
 
 
 Mtest = [[1,0,1],[0,1,1],[1,0,1]]
-#print(charDetection(Mtest))
+#print(verticalProjection(Mtest))
 
 
-def charSlice(M, originalM): #TODO: version 2, pas fini
-    """
-    M : matrice ayant subis le projeté vertical
-    originalM : matrice originale, avant le projeté vertical
-    return : liste de matrices correspondant aux char de l'image
-    """
+def charSlice(M, originalM):
+    matrixOfLines = []
+    matrixOfPxl = []
     lM = len(M)
     cM = len(M[0])
-    matrixOfChar = []
-    matrixOfPxl = []
-    isFullOfZero = True
-    previousCutIndex = 0
+    arrMinI = 0 #index qui sert à ne pas ajouter le début de liste dans la matrice
+
 
     for i in range(cM):
-        j = 0
-        isFullOfZero = True
+        #si le i d'avant était sur une section, on décale notre arrMinI
+        if M[0][i] == 1 and arrMinI == (-1):
+            arrMinI = i
 
-        #si la liste est plein de 0 alors c'est une interligne
-        while isFullOfZero and j<lM:
-            if M[j][i] == 1:
-                isFullOfZero = False
-            else:
-                j += 1
-        
-        
-        if isFullOfZero:
-            previousCutIndex = i
+        #on ajoute tout dans la matrice ssi le i d'avant n'était pas déja sur une section
+        elif M[0][i] == 0 and arrMinI != -1:
             matrixOfPxl = []
-            for k in range(lM):
+            for j in range(lM):
                 listOfPxl = []
-                for l in range(previousCutIndex, i):
-                    listOfPxl.append(originalM[k][l])
+                for k in range(arrMinI, i):
+                    listOfPxl.append(originalM[j][k])
                 matrixOfPxl.append(listOfPxl)
-            
-            matrixOfChar.append(matrixOfChar)
+            matrixOfLines.append(matrixOfPxl)
+            arrMinI = -1
+
+    #pour ajouter les derniere lignes
+    if arrMinI != -1:
+        matrixOfPxl = []
+        for j in range(lM):
+            listOfPxl = []
+            for k in range(arrMinI, cM):
+                listOfPxl.append(originalM[j][k])
+            matrixOfPxl.append(listOfPxl)
+        matrixOfLines.append(matrixOfPxl)
+
+    return matrixOfLines
 
 
-        if i == cM-1 and matrixOfPxl != []:
-            matrixOfChar.append(matrixOfPxl)
-
-    return matrixOfChar
-
-
-def charSlice1(M, originalM): #BUG: ajoute les matrice dans le mauvais sens (vertical)
-    """
-    M : matrice ayant subis le projeté vertical
-    originalM : matrice originale, avant le projeté vertical
-    return : liste de matrices correspondant aux char de l'image
-    """
-    lM = len(M)
-    cM = len(M[0])
-    matrixOfChar = []
-    matrixOfPxl = []
-    isFullOfZero = True
-
-    for i in range(cM):
-        j = 0
-        isFullOfZero = True
-
-        #si la liste est plein de 0 alors c'est une interligne
-        while isFullOfZero and j<lM:
-            if M[j][i] == 1:
-                isFullOfZero = False
-            j += 1
-        
-        #si c'est plein on ajoute a la matrixOfPxl pour recreer la rangé de pixel
-        if not isFullOfZero:
-            addList = []
-            for k in range(lM):
-                addList.append(originalM[k][i])
-            matrixOfPxl.append(addList)
-        else: #une interligne donc notre ligne est complete on peut tout ajouter à la matrice de lignes
-            if matrixOfPxl != []: #si la lgine de pixels d'avant n'était pas deja une interligne
-                matrixOfChar.append(matrixOfPxl)
-                matrixOfPxl = []
-        
-        #si on traite la derniere ligne qui n'est pas vide, on ajoute tout à la matrice de lignes
-        if i == cM-1 and matrixOfPxl != []:
-            matrixOfChar.append(matrixOfPxl)
-
-    return matrixOfChar
-Mtest = [[1,1,1,0,1,0,1,1,1],[1,1,0,0,1,0,1,1,0],[1,1,1,0,0,0,1,0,1]]
-print(charSlice(charDetection(Mtest), Mtest))
+Mtest = [[1,1,1,0,1,0,1,0,0],[1,1,0,0,1,0,1,0,0],[1,1,1,0,0,0,1,0,0]]
+print(charSlice(verticalProjection(Mtest), Mtest))
