@@ -1,17 +1,3 @@
-from PIL import Image #Import avec le module Pillow pour le Traitement d'image
-from numpy import array
-
-### I - Chargement de l'image et nuance de gris
-
-image = Image.open("HelloWorld.bmp")
-#image.show()
-bwImage = image.convert('L') #convertion en nuance de gris
-
-### II - Convertion en noir et blanc (0/1)
-
-#TODO
-
-### III - Decoupe
 # Decoupe des lignes
 def horizontalProjection(M):
     """
@@ -42,22 +28,22 @@ def horizontalProjection(M):
     return projectionM
 
 
-Mtest = [[1,0,1],[0,0,1],[1,0,0]]
 #print(horizontalProjection(Mtest))
 
 
-def lineSlice(M, originalM):
+def lineSlice(M):
+    horizontalProjectedM = horizontalProjection(M)
     matrixOfLines = []
     matrixOfPxl = []
 
     #si dans la projection on a un 0 a gauche, alors tout le reste de la liste est 0 -> interligne
-    for i in range(len(M)):
+    for i in range(len(horizontalProjectedM)):
         #si on a un 1 on commence a creer une matrice
-        if M[i][0] == 1:
-            matrixOfPxl.append(originalM[i])
+        if horizontalProjectedM[i][0] == 1:
+            matrixOfPxl.append(M[i])
         #si on a un 0, on a découpé notre ligne, on ajoute la matrice correspondant à une liste de matrice
         #il faut quand meme prendre en compte le cas ou on a plusieurs lignes vide et ne pas ajouter de liste vide
-        elif M[i][0] == 0 and matrixOfPxl != []:
+        elif horizontalProjectedM[i][0] == 0 and matrixOfPxl != []:
             matrixOfLines.append(matrixOfPxl)
             matrixOfPxl = []
     #on ajoute la fin si la matrice de pxl n'est pas vide
@@ -67,7 +53,6 @@ def lineSlice(M, originalM):
     return matrixOfLines
 
 
-Mtest = [[0,0,1],[0,0,1],[0,0,0],[0,0,0],[1,0,0],[1,0,0],[0,0,0],[1,1,1],[1,1,1]]
 #print(lineSlice(horizontalProjection(Mtest), Mtest))
 
 
@@ -99,30 +84,30 @@ def verticalProjection(M):
     return projectionM
 
 
-Mtest = [[1,0,1],[0,1,1],[1,0,1]]
 #print(verticalProjection(Mtest))
 
 
-def charSlice(M, originalM):
+def charSlice(M):
+    verticalProjectedM = verticalProjection(M)
     matrixOfLines = []
     matrixOfPxl = []
-    lM = len(M)
-    cM = len(M[0])
+    lM = len(verticalProjectedM)
+    cM = len(verticalProjectedM[0])
     arrMinI = 0 #index qui sert à ne pas ajouter le début de liste dans la matrice
 
 
     for i in range(cM):
         #si le i d'avant était sur une section, on décale notre arrMinI
-        if M[0][i] == 1 and arrMinI == (-1):
+        if verticalProjectedM[0][i] == 1 and arrMinI == (-1):
             arrMinI = i
 
         #on ajoute tout dans la matrice ssi le i d'avant n'était pas déja sur une section
-        elif M[0][i] == 0 and arrMinI != -1:
+        elif verticalProjectedM[0][i] == 0 and arrMinI != -1:
             matrixOfPxl = []
             for j in range(lM):
                 listOfPxl = []
                 for k in range(arrMinI, i):
-                    listOfPxl.append(originalM[j][k])
+                    listOfPxl.append(M[j][k])
                 matrixOfPxl.append(listOfPxl)
             matrixOfLines.append(matrixOfPxl)
             arrMinI = -1
@@ -133,12 +118,22 @@ def charSlice(M, originalM):
         for j in range(lM):
             listOfPxl = []
             for k in range(arrMinI, cM):
-                listOfPxl.append(originalM[j][k])
+                listOfPxl.append(M[j][k])
             matrixOfPxl.append(listOfPxl)
         matrixOfLines.append(matrixOfPxl)
 
     return matrixOfLines
 
 
-Mtest = [[1,1,1,0,1,0,1,0,0],[1,1,0,0,1,0,1,0,0],[1,1,1,0,0,0,1,0,0]]
-print(charSlice(verticalProjection(Mtest), Mtest))
+def binarizedToChars(M):
+    matrixOfLines = lineSlice(M)
+
+    slicedCharsPerLine = []
+    for i in range(len(matrixOfLines)):
+        slicedCharsPerLine.append(charSlice(matrixOfLines[i]))
+
+    return slicedCharsPerLine
+
+
+Mtest = [[1,1,0,0,0],[1,1,0,1,0],[0,0,0,0,0],[1,1,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[1,0,0,1,0]]
+print(binarizedToChars(Mtest))
