@@ -1,17 +1,29 @@
 import numpy as np
 
+
 def relu(z):
+    """
+    Fonction d'activation (comparaison au seuil)
+    """
     a = np.maximum(0,z)
     return a
 
+
 def init_param(layer_sizes): #layer sizes => list of layer sizes
+    """
+    Attribue des poids et biais sur chaque neuronne
+    """
     param = {}
     for i in range(1,len(layer_sizes)):
         param['W' + str(i)] = (np.random.randn(layer_sizes[i],layer_sizes[i-1]) * 0.01)
         param['B' + str(i)] = (np.random.randn(layer_sizes[i],1) * 0.01)
     return param
 
+
 def feedforward(X_train,param): #param => dict [weights x][biases y] X_train = input data
+    """
+    Prend valeur d'entrainement et retourne dictionnaire de résultats
+    """
     layers = len(param)//2
     values = {}
     for i in range(1,layers+1): #applying activation fn fn(x * w) + b for all data
@@ -26,7 +38,11 @@ def feedforward(X_train,param): #param => dict [weights x][biases y] X_train = i
                 values['A'+str(i)]= relu(values['Z'+str(i)])
     return values #values => dict with all data post-nn
 
+
 def compute_cost(values,Y_train): #values => NN result Y_train => result expected
+    """
+    Ecart entre valeur attendu et valeur obtenue
+    """
     layers = len(values)//2
     Y_pred = values['A'+str(layers)]
     cost = 1/(2*len(Y_train)) * np.sum(np.square(Y_pred - Y_train)) #compute cost fn for each val (get_val-expec_val)**2
@@ -34,6 +50,9 @@ def compute_cost(values,Y_train): #values => NN result Y_train => result expecte
 
 
 def backprop(param,values,X_train,Y_train): #compute the gradient of all weights and biases
+    """
+    Creer un vecteur(direction) pour laquel le resultat sera plus proche au prochain test
+    """
     layers = len(param)//2
     m = len(Y_train)
     grads = {}
@@ -52,7 +71,11 @@ def backprop(param,values,X_train,Y_train): #compute the gradient of all weights
             grads['B'+str(i)] = 1/m * np.sum(dZ,axis=1,keepdims=True)
     return grads
 
+
 def update_param(param,grads,learning_rate): #update all weight and biases
+    """
+    Applique le vecteur aux neuronnes pour corriger
+    """
     layers = len(param)//2
     param_updated = {}
     for i in range(1,layers+1):
