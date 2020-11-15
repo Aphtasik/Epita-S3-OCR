@@ -143,14 +143,26 @@ def binarizedToChars(M):
 
 
 MTest = [[0,0,0,0,0,0],[1,0,0,1,1,0],[1,0,0,0,1,0],[0,0,0,0,0,0],[0,0,0,0,0,0],[0,0,0,1,1,0],[0,0,0,0,0,0]]
+print("### Matrice de base pour projete et decoupe des lignes")
+print(MTest)
+print()
+print("# Projete Horizontal")
 print(horizontalProjection(MTest))
 print()
+print("# Projete Vertical")
 print(verticalProjection(MTest))
 print()
+print("# Decoupe des lignes")
 print(lineSlice(MTest))
 print()
 
-Mtest2 = [[1,0,0,1,1,0],[1,0,0,0,1,0],[0,0,0,1,1,0]]
-print(charSlice(lineSlice(Mtest2)))
+MTest2 = [[1,0,0,1,1,0],[1,0,0,0,1,0],[0,0,0,1,1,0]]
+print("### Matrice de base pour decoupe des chars")
+print(MTest2)
 print()
+print("# Decoupe de chars")
+print(charSlice(MTest2))
+print()
+
+print("### Decoupage des lignes puis chars")
 print(binarizedToChars(MTest))
