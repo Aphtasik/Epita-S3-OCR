@@ -167,7 +167,7 @@ def alphabet():#TODO non testée, en attente de dataset
     predict_letter = []
     print(predict(np.array([predict_letter]),param))
 
-
+xor()
 #X = np.array([[0,1,0,0,0,0,0,0,0,0,0,0,0],[1,0,0,0,0,0,0,0,0,0,0,0,0],[1,1,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0]])
 #layer_sizes= np.array([13,2,1])
 #epoch = 1000
