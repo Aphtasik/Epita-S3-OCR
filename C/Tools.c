@@ -2,6 +2,8 @@
 #include<stdio.h>
 #include "Tools.h"
 
+void PrintList(int);
+
 //##### Creation of Matrix #####
 struct Matrix CreateMatrix(int rows, int columns)
 {
@@ -57,7 +59,7 @@ void ChangeEltInMatrix(struct Matrix matrix, int x, int y, float val)
 //Print the element in (x,y) in the matrix
 void PrintEltIntMatrix(struct Matrix matrix, int x, int y)
 {
-    printf("Element in (%i, %i) = %d\n", x, y, MovePointerInMatrix(matrix, x, y));
+    printf("Element in (%i, %i) = %f\n", x, y, MovePointerInMatrix(matrix, x, y));
 }
 
 //Print all elt in matrix
@@ -67,7 +69,7 @@ void PrintMatrix(struct Matrix matrix)
     {
         for(int j = 0; j < matrix.columns; j++)
         {
-            printf("%f ", GetEltInMatrix(matrix, i, j));
+            printf("%f ", MovePointerInMatrix(matrix, i, j));
         }
         printf("\n");
     }
@@ -88,7 +90,7 @@ void InitialiseMatrixWithZero(struct Matrix matrix)
     }
 }
 
-
+/*
 //##### TESTS #####
 int main() {
     struct Matrix matrix = CreateMatrix(3,3);
@@ -107,4 +109,4 @@ int main() {
 
     free(matrix.pmatrix);
     return 0;
-}
+}*/
