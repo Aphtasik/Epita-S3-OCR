@@ -16,6 +16,7 @@
 }*/
 
 
+//Make an histogram with the number of 1 in each line of the binarized matrix
 void HorizontalProjection(struct Matrix matrix, int* pList)
 {
     int sum;
@@ -37,6 +38,7 @@ void HorizontalProjection(struct Matrix matrix, int* pList)
 }
 
 
+//Make an histogram with the number of 1 in each line of the binarized matrix
 void VerticalProjection(struct Matrix matrix, int* pList)
 {
     int sum;
@@ -58,8 +60,29 @@ void VerticalProjection(struct Matrix matrix, int* pList)
 }
 
 
-int LigneSize(int *pProjH, int lenList)
+//Search for the maximum of 1 on a line of the binarized matrix = highest number on the HorizontalProjection's histogram
+int maxBlackPxlOnLine(int* pProjH, int matrixNbOfRows)
 {
+    int *p;
+    p = pProjH;
+    int max = *p;
+
+    for(int i = 1; i < matrixNbOfRows ; i++)
+    {
+        if(*p > max)
+        {
+            max = *p;
+        }
+    }
+
+    return max;
+}
+
+
+//Return the size of the first line of texte of the matrix
+int LineSize(int *pProjH, int lenList)
+{
+    int treshold = maxBlackPxlOnLine(pProjH, lenList)/2;
     int res = 0;
     int isFound = 0;
     int onSpree = 0;
@@ -69,28 +92,100 @@ int LigneSize(int *pProjH, int lenList)
 
     while(i < lenList && isFound == 0)
     {
-        if(onSpree == 0 && *p != 0)
+        if(onSpree == 0 && *(p+i) > treshold)
         {
             onSpree = 1;
             res++;
         }
-        else if (onSpree == 1 && *p != 0)
+        else if (onSpree == 1 && *(p+i) > treshold)
         {   
             res++;
         }
-        else if (onSpree == 1 && *p == 0)
+        else if (onSpree == 1 && *(p+i) < treshold)
         {
             isFound = 1;
         }
         i++;
-        p++;
     }
     return res;
 }
 
 
+//return the biggeest line size
+/*int maxLineSize(int *pProjH, int lenList)
+{
+    int treshold = maxBlackPxlOnLine(pProjH, lenList)/2;
+    int maxSize = 0;
+    int currentSize = 0;
+    int onSpree = 0;
+    int *p;
+    p = pProjH;
+
+    for(int i = 0 ; i < lenList ; i++)
+    {
+        if(onSpree == 0 && *p > treshold)
+        {
+            onSpree = 1;
+            currentSize++;
+        }
+        else if (onSpree == 1 && *p > treshold)
+        {   
+            currentSize++;
+        }
+        else if (onSpree == 1 && *p < treshold)
+        {
+            if (currentSize > maxSize)
+            {
+                maxSize = currentSize;
+            }
+            onSpree = 0;
+            currentSize = 0;
+        }
+    }
+}*/
 
 
+//Count the total number of lines + paragraph in the text
+int CountNbOfLinesAndParagraph(int matrixNbRows, int lineSize, int* pProjH)
+{
+    int treshold = maxBlackPxlOnLine(pProjH, matrixNbRows)/2;
+    int onSpree = 0;
+    int sum = 0;
+    int nbNotLine = 0;
+    int *p;
+    p = pProjH;
+
+    for(int i = 0 ; i < matrixNbRows ; i++)
+    {
+        if(onSpree == 0 && *(p+i) > treshold)
+        {
+            onSpree = 1;
+            if(nbNotLine > lineSize*3)
+            {
+                sum++;
+            }
+            nbNotLine = 0;
+        }
+        else if (onSpree == 1 && *(p+i) < treshold)
+        {
+            sum++;
+            nbNotLine++;
+            onSpree = 0;
+        }
+        else if (onSpree == 0 && *(p+i) < treshold) 
+        {
+            nbNotLine++;
+        }
+    }
+
+    return sum;
+}
+
+
+void iMatrix()
+{
+
+}
 
 int main()
 {
@@ -105,7 +200,9 @@ int main()
     int *pProjV = malloc(sizeof(int)*matrix.columns);
 
     int *p;
+
     //TEST HorizontalProj
+    printf("HorizontalProj\n");
     HorizontalProjection(matrix, pProjH);
     p = pProjH;
     for(int i = 0 ; i < matrix.rows;i++)
@@ -116,6 +213,7 @@ int main()
     printf("\n");
 
     //TEST VerticalProj
+    printf("VerticalProj\n");
     VerticalProjection(matrix, pProjV);
     p = pProjV;
     for(int i = 0 ; i < matrix.columns;i++)
@@ -126,8 +224,9 @@ int main()
     printf("\n");
 
     //TEST LigneSize
-    printf("Ligne size = %i\n", LigneSize(pProjH, matrix.rows));
+    printf("Ligne size = %i\n", LineSize(pProjH, matrix.rows));
 
-
-
+    //TEST iList
+    int nbLines = CountNbOfLinesAndParagraph(matrix.rows, LineSize(pProjH, matrix.rows), pProjH);
+    struct Matrix linesMatrix = CreateMatrix(nbLines,3);
 }
