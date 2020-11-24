@@ -22,33 +22,58 @@ double random(){
 }
 
 Network *init_nn(int nbI, int nbH, int nbO){
+	//printf("%zu\n",sizeof(Network));
 
 	Network *net = malloc(sizeof(Network));
+	if(net == NULL)
+		return NULL;
+
 	net->NumInput = nbI;
+	//printf("%i\n",net->NumInput);
+	
 	net->NumHidden = nbH;
 	net->NumOutput = nbO;
 
-	//net->Input = malloc(sizeof(double) * NumInput);
-	net->WeightIH = malloc(sizeof(double) * net->NumInput);
+	net->NumInput = malloc(sizeof(double) * net->NumInput);
+	if(net->NumInput == NULL)
+		return NULL;
+
+	net->WeightIH = malloc(sizeof(double)*net->NumInput);
+	if(net->WeightIH == NULL)
+		return NULL;
+
 	for(int i = 0; i < net->NumInput;i++){
 		net->WeightIH[i] = rand();
 	}
 
 	net->A1 = malloc(sizeof(double) * net->NumHidden);
+	if(net->A1 == NULL)
+		return NULL;
+
 	net->BiasH = malloc(sizeof(double) * net->NumHidden);
+	if(net->BiasH == NULL)
+		return NULL;
 	for(int i=0; i < net->NumHidden; i++){
 		net->BiasH[i] = rand();
 	}
+
 	net->WeightHO = malloc(sizeof(double)* net->NumHidden);
+	if(net->WeightHO == NULL)
+		return NULL;
 	for(int i = 0; i < net->NumHidden; i++){
 		net->WeightHO[i] = rand();
 	}
 
 	net->BiasO = malloc(sizeof(double) * net->NumOutput);
+	if(net->BiasO == NULL)
+		return NULL;
 	for(int i=0; i < net->NumOutput; i++){
 		net->BiasO[i] = rand();
 	}
+
 	net->Output = malloc(sizeof(double)* net->NumOutput);
+	if(net->Output == NULL)
+		return NULL;
 
 	return net;
 }
@@ -76,6 +101,16 @@ void forward(Network *net, double *Input){
 
 void train(Network *net, size_t epoch, double eta){
 
+}
+
+void free_nn(Network *net){
+	free(net->WeightIH);
+	free(net->BiasH);
+	free(net->A1);
+	free(net->WeightHO);
+	free(net->BiasO);
+	free(net->Output);
+	free(net);
 }
 
 void save_nn(Network *net, char *path){
