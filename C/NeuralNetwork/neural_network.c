@@ -306,7 +306,7 @@ double* backpropB(Network *net, double *expected){
 	for (int k = 0; k < net->NumOutput; k++)
 	{
 		dCawBO[k] = 2*(net->Output[k] - expected[k]);
-		dazwBH[k] = dsigmoid(net->Z2[k]);
+		dazwBO[k] = dsigmoid(net->Z2[k]);
 	}
 	for (int k = 0; k < net->NumOutput; k++)
 	{
