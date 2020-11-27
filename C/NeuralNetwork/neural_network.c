@@ -11,89 +11,133 @@ double dsigmoid(double x){
 	return (sigmoid(x)*(1 - sigmoid(x)));
 }
 
-void free_nn(Network *net){
-	free(net->Input);
-	free(net->WeightIH);
-	free(net->BiasH);
-	free(net->Z1);
-	free(net->A1);
-	free(net->WeightHO);
-	free(net->BiasO);
-	free(net->Z2);
-	free(net->Output);
-	free(net);
-}
-
-
-Network *load_nn(char *filepath){
-	Network *net = malloc(sizeof(Network));
-	FILE *nr = fopen(filpath, "r");
-	if(nr == NULL){
-		printf("load_nn: cannot open the file");
-		return NULL;
-	}
-	fscanf(nr, "%i\n", &net->NumInput);
-	fscanf(nr, "%i\n", &net->NumHidden);
-	fscanf(nr, "%i\n", &net->NumOutput);
-	net->WeightIH = malloc(sizeof(double) * net->NumInput);
-	for(int i = 0; i < net->NumInput; i++){
-		fscanf(nr, "%f", &net->WeightIH[i]);
-	}
-
-	net->Z1 = malloc(sizeof(double) * net->NumHidden);
-	net->A1 = malloc(sizeof(double) * net->NumHidden);
-	net->BiasH = malloc(sizeof(double) * net->NumHidden);
-	net->WeightHO = malloc(sizeof(double) * net->NumHidden);
-	for(int i = 0; i < net->NumHidden; i++){
-		fscanf(nr, "%f\n", net->Z1[i]);
-		fscanf(nr, "%f\n", net->A1[i]);
-		fscanf(nr, "%f\n", net->BiasH[i]);
-		fscanf(nr, "%f\n", net->WeightHO[i]
-	}
-	net->BiasO = malloc(sizeof(double) * net->NumOutput);
-	net->Z2 = malloc(sizeof(double) * net->NumOutput);
-	net->Output = malloc(sizeof(double) * net->NumOutput);
-	for(int i = 0; i < net->NumOutput; i++){
-		fscanf(nr, "%f\n", net->BiasO[i]);
-		fscanf(nr, "%f\n", net->Z2[i]);
-		fscanf(nr, "%f\n", net->Output[i]);
-	}
-	fclose(nr);
-}
-
-void save_nn(Network *net, char *filepath){
-	FILE *nr = fopen(filepath, "w+");
-	if(nr == NULL){
-		printf("save_nn: cannot open the file");
-		return NULL;
-	}
-	fprintf(nr, "%i\n", net->NumInput);
-	fprintf(nr, "%i\n", net->NumHidden);
-	fprintf(nr, "%i\n", net->NumOutput);
-
-	for(int i = 0; i < net->NumInput, i++){
-		fprintf(nr, "%lf\n", net->WeightIH[i]);
-	}
-	for(int i = 0; i < net->NumHidden; i++){
-		fprintf(nr, "%lf\n", net->Z1[i]);
-		fprintf(nr, "%f\n", net->A1[i]);
-		fprintf(nr, "%f\n", net->BiasH[i]);
-		fprintf(nr, "%f\n", net->WeightHO[i]);
-	}
-	for(int i = 0; i < net->NumOutput; i++){
-		fprintf(nr, "%f\n", net->BiasO[i]);
-		fprintf(nr, "%f\n", net->Z2[i]);
-		fprintf(nr, "%f\n", net->Output[i]);
-	}
-	fclose(nr);
-	free_nn(net);
-}
-
 double random(){
 	return (double)rand()/((double)RAND_MAX+1);
 }
 
-Network *init_nn(int nbI, int nbH, int nbO, int batch_size){
+void free_nn(Network *net){
+	free(net->Input);
+	for(int i = 0; i < net->NumInput; i++){
+		free(net->WeightIH[i]);
+		free(net->GradWeightIH[i]);
+	}
+	free(net->WeightIH);
+	free(net->GradWeightIH);
+	
+	free(net->BiasH);
+	free(net->Z1);
+	free(net->A1);
+	for(int i = 0; i < net->NumHidden; i++){
+		free(net->WeightHO[i]);
+		free(net->GradWeightHO[i]);
+	}
+	free(net->WeightHO);
+	free(net->GradWeightHO);
+
+	free(net->BiasO);
+	free(net->Z2);
+	free(net->Output);
+	free(net->Error);
+	free(net);
+}
+
+void save_nn(Network *net, char* filepath){
+	FILE *nr = fopen(filepath, "w+");
+	if(nr == NULL){
+		printf("save_nn: unable to open file");
+	}
+	fprintf(nr, "%d\n", net->NumInput);
+	fprintf(nr, "%d\n", net->NumHidden);
+	fprintf(nr, "%d\n", net->NumOutput);
+	fprintf(nr, "%d\n", net->Batch_size);
+	fprintf(nr, "%d\n", net->NbTrainingData); //WARNING : modify it according to the nb of training data
+
+	for(int i = 0; i < net->NumInput  + 1; i++){
+		for(int j = 0; j < net->NumHidden;j++){
+			fprintf(nr,"%lf\n", net->GradWeightIH[i][j]);
+			fprintf(nr,"%lf\n", net->WeightIH[i][j]);
+		}
+	}
+
+	for(int k = 0; k < net->NumOutput ; k++){
+		for(int j = 0; j < net->NumHidden;j++){
+			fprintf(nr,"%f\n", net->GradWeightHO[j][k]);
+			fprintf(nr,"%f\n", net->WeightHO[j][k]);
+		}
+	}
+
+	for (int j = 0; j < net->NumHidden; j++)
+	{
+		fprintf(nr, "%f\n", net->BiasH[j]);
+	}
+	for (int k = 0; k < net->NumOutput; k++)
+	{
+		fprintf(nr, "%f\n", net->BiasO[k]);
+	}
+
+	fclose(nr);
+	free_nn(net);
+}
+
+Network *load_nn(char* filepath){
+	Network *net = malloc(sizeof(Network));
+	FILE *nr = fopen(filepath, "r");
+	if(nr == NULL){
+		printf("load_nn: cannot open the file");
+		return NULL;
+	}
+	fscanf(nr, "%d\n", &net->NumInput);
+	fscanf(nr, "%d\n", &net->NumHidden);
+	fscanf(nr, "%d\n", &net->NumOutput);
+	fscanf(nr, "%d\n", &net->Batch_size);
+	fscanf(nr, "%d\n", &net->NbTrainingData); //WARNING : modify it according to the nb of training data
+	net->GradWeightIH = malloc(sizeof(double *) * net->NumInput);
+	net->WeightIH      = malloc(sizeof(double *) * net->NumInput);
+	for(int i = 0; i < net->NumInput; i++){
+		net->GradWeightIH[i] = malloc(sizeof(double) * net->NumHidden);
+		net->WeightIH[i]      = malloc(sizeof(double) * net->NumHidden);
+		for(int j = 0; j < net->NumHidden;j++){
+			fscanf(nr,"%lf\n", &net->GradWeightIH[i][j]);
+			fscanf(nr,"%lf\n", &net->WeightIH[i][j]);
+		}
+	}
+
+	net->GradWeightHO  = malloc(sizeof(double*) * net->NumHidden);
+	net->WeightHO      = malloc(sizeof(double*) * net->NumHidden);
+	for(int j = 0; j < net->NumHidden; j++){
+		net->GradWeightHO[j] = malloc(sizeof(double) * net->NumOutput);
+		net->WeightHO[j]      = malloc(sizeof(double) * net->NumOutput);
+	}
+	for(int k = 0; k < net->NumOutput; k++){
+		for(int j = 0; j < net->NumHidden;j++){
+			fscanf(nr,"%lf\n", &net->GradWeightHO[j][k]);
+			fscanf(nr,"%lf\n", &net->WeightHO[j][k]);
+		}
+	}
+
+	net->BiasH = malloc(sizeof(double) * net->NumHidden);
+	net->BiasO = malloc(sizeof(double) * net->NumOutput);
+	for (int j = 0; j < net->NumHidden; j++){
+		fscanf(nr, "%f\n", &net->BiasH[j]);
+	}
+	for (int k = 0; k < net->NumOutput; k++)
+	{
+		fscanf(nr, "%f\n", &net->BiasO[k]);
+	}
+	fclose(nr);
+
+	net->Z1 = calloc(sizeof(double),net->NumHidden);
+	net->A1 = calloc(sizeof(double),net->NumHidden);
+
+	net->Z2 = calloc(sizeof(double),net->NumOutput);
+	net->Output = calloc(sizeof(double),net->NumOutput);
+
+	net->Error = calloc(sizeof(double), net->Batch_size);
+
+	return net;
+}
+
+Network *init_nn(int nbI, int nbH, int nbO, int batch_size, int nbtrainingdata){
 
 	Network *net = malloc(sizeof(Network));
 	if(net == NULL)
@@ -103,17 +147,22 @@ Network *init_nn(int nbI, int nbH, int nbO, int batch_size){
 	net->NumHidden = nbH;
 	net->NumOutput = nbO;
 	net->Batch_size = batch_size;
+	net->NbTrainingData = nbtrainingdata;
 
 	net->Input = malloc(sizeof(double) * net->NumInput);
 
-	net->WeightIH = malloc(sizeof(double)*net->NumInput);
-	if(net->WeightIH == NULL)
-		return NULL;
-
-	for(int i = 0; i < net->NumInput;i++){
-		net->WeightIH[i] = rand();
+	net->WeightIH = malloc(sizeof(double*) * net->NumInput);
+	net->GradWeightIH = malloc(sizeof(double*) * net->NumInput);
+	for(int i = 0; i < net->NumInput; i++){
+		net->WeightIH[i] = calloc(sizeof(double), net->NumHidden);
+		net->GradWeightIH[i] = calloc(sizeof(double),net->NumHidden);
 	}
-	
+	for(int i = 0; i < net->NumInput; i++){
+		for(int j=0; j < net->NumHidden; j++){
+			net->WeightIH[i][j] = random();
+		}
+	}
+
 	net->Z1 = calloc(net->NumHidden, sizeof(double));
 
 	net->A1 = calloc(net->NumHidden, sizeof(double));
@@ -127,11 +176,16 @@ Network *init_nn(int nbI, int nbH, int nbO, int batch_size){
 		net->BiasH[i] = rand();
 	}
 
-	net->WeightHO = malloc(sizeof(double) * net->NumHidden);
-	if(net->WeightHO == NULL)
-		return NULL;
+	net->WeightHO = malloc(sizeof(double*) * net->NumHidden);
+	net->GradWeightHO= malloc(sizeof(double*) * net->NumHidden);
+	for(int i = 0; i < net->NumOutput; i++){
+		net->GradWeightHO[i] = calloc(sizeof(double), net->NumOutput);
+		net->WeightHO[i] = calloc(sizeof(double), net->NumOutput);
+	}
 	for(int i = 0; i < net->NumHidden; i++){
-		net->WeightHO[i] = rand();
+		for(int j=0; j < net->NumOutput; j++){
+			net->WeightHO[i][j] = random();
+		}
 	}
 
 	net->BiasO = malloc(sizeof(double) * net->NumOutput);
@@ -152,161 +206,167 @@ Network *init_nn(int nbI, int nbH, int nbO, int batch_size){
 	return net;
 }
 
-void forward(Network *net, double *Input){
-	for(int i = 0; i < net->NumInput; i++){
-		net->Input[i] = Input[i];
-	}
-	//compute A1:
-	for(int i = 0; i < net->NumHidden; i++){
-		for(int j = 0; j < net->NumInput; j++){
-			net->Z1[i] += net->WeightIH[j] * Input[j]; 
+void forward(Network *net ,double *input){
+	net->Input = input;
+	for(int j = 0; j < net->NumHidden; j++){
+		for (int i = 0; i < net->NumInput; i++)
+		{
+			net->Z1[j] += input[i] * net->WeightIH[i][j];
 		}
-		net->Z1[i] += net->BiasH[i];
-		net->A1[i] = sigmoid(net->Z1[i]);
+		net->Z1[j] += net->BiasH[j];
 	}
 
-	//compute Output:
-	for(int i = 0; i < net->NumOutput; i++){
-		for(int j = 0; j < net->NumHidden; j++){
-			net->Z2[i] += net->WeightHO[j] * net->A1[j];
-		}
-		net->Z2[i] += net->BiasO[i];
-		net->Output[i] = sigmoid(net->Output[i]);
+	for (int j = 0; j < net->NumHidden; j++)
+	{
+		net->A1[j] = sigmoid(net->Z1[j]);
 	}
-	//result is stocked in net->Output
+		
+	for (int k = 0; k < net->NumOutput; k++)
+	{
+		for (int j = 0; j < net->NumHidden;j++)
+		{
+			net->Z2[k] += net->A1[j] * net->WeightHO[j][k];		
+		}
+		net->Z2[k] += net->BiasO[k];
+		
+	}
+	for (int k = 0; k < net->NumOutput; k++)
+	{
+		net->Output[k] = sigmoid(net->Z2[k]);
+	}
+		
 }
 
-double *backpropW(Network *net, double *expected, int batch_index){
-	double *grad = malloc(sizeof(double) * (net->NumInput + net->NumHidden));
+void backpropW(Network *net, double *expected,int batch_index){
 
-	//array for the derivative operations for the weights
-	//hidden layer
-	double *dCaWH = malloc(sizeof(double) * net->NumHidden);	
-	double *dazWH = malloc(sizeof(double) * net->NumHidden);
-	double *dzwWH = malloc(sizeof(double) * net->NumHidden);
-	//input layer
-	double *dCaWI = malloc(sizeof(double) * net->NumInput);
-	double *dazWI = malloc(sizeof(double) * net->NumInput);
-	double *dzwWI = malloc(sizeof(double) * net->NumInput);
+	for (int k = 0; k < net->NumOutput; k++)
+	{
+		net->Error[batch_index] += (net->Output[k] - expected[k]) * (net->Output[k] - expected[k]);
+	}
+
+	double *dCawHO = calloc(sizeof(double), net->NumOutput);
+	double *dazwHO = calloc(sizeof(double), net->NumOutput);
+	double *dzwWHO = calloc(sizeof(double), net->NumHidden);
+
+	double *dCawIH = calloc(sizeof(double), net->NumHidden);
+	double *dazwIH = calloc(sizeof(double), net->NumHidden);
+	double *dzwWIH = calloc(sizeof(double), net->NumInput);
+
+	for (int k = 0; k < net->NumOutput; k++)
+	{
+		dCawHO[k] = 2* (net->Output[k] - expected[k]);
+		dazwHO[k] = dsigmoid(net->Z2[k]);
+	}
+	for (int j = 0; j < net->NumHidden; j++)
+	{
+		dzwWHO[j] = net->A1[j];
+	}
+
+	for ( int k = 0; k < net->NumOutput; k++)
+	{
+		for (int j = 0; j < net->NumHidden; j++)
+		{
+			net->GradWeightHO[j][k] = dCawHO[j] * dazwHO[j] * dzwWHO[k];
+		}		
+	}
 	
-	//array for the derivative operations for the biases
-	//output layer
-	double *dCaBO = malloc(sizeof(double) * net->NumOutput);
-	double *dazBO = malloc(sizeof(double) * net->NumOutput);
-	double *dzbBO = malloc(sizeof(double) * net->NumOutput);
-	//hidden layer
-	double *dCaBH = malloc(sizeof(double) * net->NumHidden);
-	double *dazBH = malloc(sizeof(double) * net->NumHidden);
+	for (int j = 0; j < net->NumHidden; j++)
+	{
+		for (int k = 0; k < net->NumOutput; k++)
+		{
+			dCawIH[j] += net->WeightHO[j][k] * dsigmoid(net->Z2[k]) * 2*(net->Output[k] - expected[k]);
+		}
+		
+		dazwIH[j] = dsigmoid(net->Z1[j]);
+	}
+	for (int i = 0; i < net->NumInput; i++)
+	{
+		dzwWIH[i] = net->Input[i];
+	}
 
-	//computation of the cost function
-	for(int i = 0, i < net->NumOutput; i++){
-		net->Error[batch_index] += (net->Output[i] - expected[i]) * (net->Output[i] - expected[i]);
+	for ( int j = 0; j < net->NumHidden; j++)
+	{
+		for (int i = 0; i < net->NumInput; i++)
+		{
+			net->GradWeightIH[i][j] = dCawIH[j] * dazwIH[j] * dzwWIH[i];
+		}
+		
+	}
+}
+
+double* backpropB(Network *net, double *expected){
+	double *gradB = calloc(sizeof(double), net->NumHidden + net->NumOutput);
+
+	double *dCawBO = calloc(sizeof(double), net->NumOutput);
+	double *dazwBO = calloc(sizeof(double), net->NumOutput);
+
+	double *dCawBH = calloc(sizeof(double), net->NumHidden);
+	double *dazwBH = calloc(sizeof(double), net->NumHidden);
+
+	for (int k = 0; k < net->NumOutput; k++)
+	{
+		dCawBO[k] = 2*(net->Output[k] - expected[k]);
+		dazwBH[k] = dsigmoid(net->Z2[k]);
+	}
+	for (int k = 0; k < net->NumOutput; k++)
+	{
+		gradB[net->NumHidden - 1 + k] = dCawBH[k] * dazwBH[k];
+	}
+
+	for (int j = 0; j < net->NumHidden; j++)
+	{
+		for (int k = 0; k < net->NumOutput; k++)
+		{
+			dCawBH[j] += net->BiasO[k] * dsigmoid(net->Z2[k]) * 2 *(net->Output[k] - expected[k]);
+		}
+		dazwBH[j] = dsigmoid(net->Z1[j]);
+	}
+	for (int j = 0; j < net->NumHidden; j++)
+	{
+		gradB[j] = dCawBH[j] * dazwBH[j];
 	}
 	
-	//computation of derivative for WeightHO
-	for(int i = 0; i < net->NumHidden; i++){
-		dCaWH[i] = 2*(net->A1[i] - expected[i]);
-		dazWH[i] = dsigmoid(net->Z2[i]);
-		dzwWH[i] = net->A1[i];
+	return gradB;	
+}
+
+void apply_changes(Network *net, double eta, double *gradB){
+	for (int k = 0; k < net->NumOutput; k++){
+		for (int j = 0; j < net->NumHidden; j++)
+		{
+			net->WeightHO[j][k] -= eta * net->GradWeightHO[j][k];
+		}
 	}
-	//computation of derivative for WeightIH
-	for(int i = 0; i < net->NumInput; i++){
-		dCaWI[i] = 2*(net->Input[i] - expected[i]);
-		dazWI[i] = dsigmoid(net->Z1[i]);
-		dzwWI[i] = net->Input[i];
+	for (int j = 0; j < net->NumHidden; j++)
+	{
+		for (int i = 0; i < net->NumInput; i++)
+		{
+			net->WeightIH[i][j] -= eta * net->GradWeightIH[i][j];
+		}
 	}
 
-	//gradient computation
-	for(int i = 0; i < net->NumInput; i++){
-		grad[i] = dCaWI[i] * dazWI[i] * dzwWI[i];
+	for (int k = 0; k < net->NumOutput; k++)
+	{
+		net->BiasO[k] -= eta * gradB[k];
 	}
-	for(int i = 0; i < net->NumHidden; i++){
-		grad[i + net->NumInput -1] = dCaWH[i] * dazWH[i] * dzwWI[i];
+	for (int j = 0; j < net->NumHidden; j++)
+	{
+		net->BiasH[j] -= eta * gradB[j];
 	}
-
-	free(dCaWI);
-	free(dCaWH);
-	free(dazWH);
-	free(dazWI);
-	free(dzwWH);
-	free(dzwWI);
 	
-	return grad
+	
 }
 
-double *backpropB(Network *net, double *expected){
-	double *grad = malloc(sizeof(double) * (net->NumOutput + net->NumHidden));
-
-	//allocation derivative arrays
-	//Output layer
-	double *dCaBO = malloc(sizeof(double) * net->NumOutput);
-	double *dazBO = malloc(sizeof(double) * net->NumOutput);
-
-	//Hidden layer
-	double *dCaBH = malloc(sizeof(double) * net->NumHidden);
-	double *dazBH = malloc(sizeof(double) * net->NumHidden);
-
-	//computation of derivative values
-	for(int i = 0; i < net->NumOutput; i++){
-		dazBO[i] = dsigmoid(net->Z2[i]);
-		dCaBO[i] = 2*(net->Output[i] - expected[i]);
+void train(Network *net, int epoch, double eta, double **input, double **expected){
+	for (int x = 0; x < epoch; x++)
+	{
+		for (int y = 0; y < net->NbTrainingData; y++)
+		{
+			forward(net, input[y]);
+			double *gradB = backpropB(net, expected[y]);
+			backpropW(net, expected[y], 0);
+			apply_changes(net, eta, gradB);
+		}
+		
 	}
-
-	for(int i = 0; i < net->NumHidden; i++){
-		dazBH[i] = dsigmoid(net->Z1[i]);
-		dCaBH[i] = 2*(net->A1[i] - expected[i]);
-	}
-
-	//gradient computation
-	for(int i = 0; i < net->NumOutput; i++){
-		grad[i + net->NumHidden -1] = dazBO[i] * dCaBO[i];
-	}
-	for(int i = 0; i < net->NumHidden; i++){
-		grad[i] = dCaBH[i] * dazBH[i];
-	}
-
-	free(dCaBO);
-	free(dCaBh);
-	free(dazBO);
-	free(dazBH);
-
+	
 }
-
-void apply_changes(Network *net, double *gradW, double *gradB, double eta){
-	//apply changes for weights
-	for(int i = 0; i < net->NumInput + net->NumHidden -1; i++){
-		if(i < net->NumInput){
-			net->WeightIH[i] -= eta * gradW[i];
-		}
-		else{
-			net->WeightHO[i - net->NumInput] -= eta * gradW[i];
-		}
-	}
-	//apply changes for bias
-	for(int i = 0; i < net->NumHidden + net-<NumOutput - 1; i++){
-		if(i < net->NumHidden){
-			net->BiasH[i] -= eta * gradB[i];
-		}
-		else{
-			net->BiasO[i - net->NumHidden] -= eta * gradB[i];
-		}
-	}
-}
-
-void train(Network *net, size_t epoch, double eta, double *input, double *expected){
-	double eta = 0.3;
-	for(int i = 0; i < epoch; i++){
-		forward(net, input);	
-		double *gradW = backpropW(net, expected, 0);
-		double *gradB = backpropB(net, expected);
-		apply_changes(net, gradW, gradB, eta);
-	}
-}
-
-
-
-
-
-
-
-
