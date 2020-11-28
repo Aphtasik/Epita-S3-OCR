@@ -2,6 +2,8 @@
 #include<stdio.h>
 #include "Tools.h"
 
+//AUTHOR: Alexandre GAUTIER
+
 void PrintList(int);
 
 //##### Creation of Matrix #####
@@ -43,7 +45,7 @@ double MovePointerInMatrix(struct Matrix matrix, int x, int y)
 }
 
 //change an elt in the matrix
-void ChangeEltInMatrix(struct Matrix matrix, int x, int y, float val)
+void ChangeEltInMatrix(struct Matrix matrix, int x, int y, double val)
 {
     if (!IsInMatrix(matrix, x, y))
     {

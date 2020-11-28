@@ -17,7 +17,7 @@ struct Matrix CreateMatrix(int rows, int columns);
 int IsInMatrix(struct Matrix matrix, int x, int y);
 
 double MovePointerInMatrix(struct Matrix matrix, int x, int y);
-void ChangeEltInMatrix(struct Matrix matrix, int x, int y, float val);
+void ChangeEltInMatrix(struct Matrix matrix, int x, int y, double val);
 
 void PrintEltIntMatrix(struct Matrix matrix, int x, int y);
 void PrintMatrix(struct Matrix matrix);
