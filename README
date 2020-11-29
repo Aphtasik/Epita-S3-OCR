@@ -1,0 +1,3 @@
+
+
+pour la compilation du réseau de neurone: make dans le dossier NeuralNetwork, 2 tests sur le xor son présent dans le main.c. il manque une fonction shuffle et une implémentation en mini batch pour un apprentissage efficace.

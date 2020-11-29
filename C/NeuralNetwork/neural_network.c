@@ -12,7 +12,7 @@ double dsigmoid(double x){
 }
 
 double random(){
-	return (double)rand()/((double)RAND_MAX+1);
+	return (double)rand()/((double)RAND_MAX);
 }
 
 void free_nn(Network *net){
@@ -117,13 +117,13 @@ Network *load_nn(char* filepath){
 
 	net->BiasH = malloc(sizeof(double) * net->NumHidden);
 	net->BiasO = malloc(sizeof(double) * net->NumOutput);
-	for (int j = 0; j < net->NumHidden; j++){
-		fscanf(nr, "%f\n", &net->BiasH[j]);
-	}
-	for (int k = 0; k < net->NumOutput; k++)
-	{
-		fscanf(nr, "%f\n", &net->BiasO[k]);
-	}
+	//for (int j = 0; j < net->NumHidden; j++){
+		fscanf(nr, "%lf\n", net->BiasH/*[j]*/);
+	//}
+	//for (int k = 0; k < net->NumOutput; k++)
+	//{
+		fscanf(nr, "%lf\n", net->BiasO/*[k]*/);
+	//}
 	fclose(nr);
 
 	net->Z1 = calloc(sizeof(double),net->NumHidden);
@@ -173,26 +173,26 @@ Network *init_nn(int nbI, int nbH, int nbO, int batch_size, int nbtrainingdata){
 	if(net->BiasH == NULL)
 		return NULL;
 	for(int i=0; i < net->NumHidden; i++){
-		net->BiasH[i] = rand();
+		net->BiasH[i] = random();
 	}
 
 	net->WeightHO = malloc(sizeof(double*) * net->NumHidden);
 	net->GradWeightHO= malloc(sizeof(double*) * net->NumHidden);
-	for(int i = 0; i < net->NumOutput; i++){
-		net->GradWeightHO[i] = calloc(sizeof(double), net->NumOutput);
-		net->WeightHO[i] = calloc(sizeof(double), net->NumOutput);
+	for(int j = 0; j < net->NumHidden; j++){
+		net->GradWeightHO[j] = calloc(sizeof(double), net->NumOutput);
+		net->WeightHO[j] = calloc(sizeof(double), net->NumOutput);
 	}
-	for(int i = 0; i < net->NumHidden; i++){
-		for(int j=0; j < net->NumOutput; j++){
-			net->WeightHO[i][j] = random();
+	for(int j = 0; j < net->NumHidden; j++){
+		for(int k=0; k < net->NumOutput; k++){
+			net->WeightHO[j][k] = random();
 		}
 	}
 
 	net->BiasO = malloc(sizeof(double) * net->NumOutput);
 	if(net->BiasO == NULL)
 		return NULL;
-	for(int i=0; i < net->NumOutput; i++){
-		net->BiasO[i] = rand();
+	for(int k=0; k < net->NumOutput; k++){
+		net->BiasO[k] = random();
 	}
 
 	net->Z2 = calloc(net->NumOutput, sizeof(double));
@@ -207,7 +207,11 @@ Network *init_nn(int nbI, int nbH, int nbO, int batch_size, int nbtrainingdata){
 }
 
 void forward(Network *net ,double *input){
-	net->Input = input;
+	for (int i = 0; i < net->NumInput; i++)
+	{
+		net->Input[i] = input[i];
+	}
+	
 	for(int j = 0; j < net->NumHidden; j++){
 		for (int i = 0; i < net->NumInput; i++)
 		{
@@ -264,9 +268,9 @@ void backpropW(Network *net, double *expected,int batch_index){
 
 	for ( int k = 0; k < net->NumOutput; k++)
 	{
-		for (int j = 0; j < net->NumHidden; j++)
+		for (int j = 0; j < net->NumOutput; j++)
 		{
-			net->GradWeightHO[j][k] = dCawHO[j] * dazwHO[j] * dzwWHO[k];
+			net->GradWeightHO[j][k] = dCawHO[k] * dazwHO[k] * dzwWHO[j];
 		}		
 	}
 	
@@ -292,6 +296,12 @@ void backpropW(Network *net, double *expected,int batch_index){
 		}
 		
 	}
+	free(dCawHO);
+	free(dazwHO);
+	free(dzwWHO);
+	free(dCawIH);
+	free(dazwIH);
+	free(dzwWIH);
 }
 
 double* backpropB(Network *net, double *expected){
@@ -325,7 +335,12 @@ double* backpropB(Network *net, double *expected){
 	{
 		gradB[j] = dCawBH[j] * dazwBH[j];
 	}
-	
+
+	free(dCawBO);
+	free(dCawBH);
+	free(dazwBO);
+	free(dazwBH);	
+
 	return gradB;	
 }
 
@@ -352,8 +367,19 @@ void apply_changes(Network *net, double eta, double *gradB){
 	{
 		net->BiasH[j] -= eta * gradB[j];
 	}
-	
-	
+	//TODO : reinitialize the arrays
+	for (int j = 0; j < net->NumHidden; j++)
+	{
+		net->Z1[j] = 0;
+	}
+	for (int k = 0; k < net->NumOutput; k++)
+	{
+		net->Z2[k] = 0;
+	}
+
+	//printf("error: %f ", net->Error[0]);
+	net->Error[0] = 0;
+
 }
 
 void train(Network *net, int epoch, double eta, double **input, double **expected){
@@ -365,8 +391,20 @@ void train(Network *net, int epoch, double eta, double **input, double **expecte
 			double *gradB = backpropB(net, expected[y]);
 			backpropW(net, expected[y], 0);
 			apply_changes(net, eta, gradB);
+			free(gradB);
 		}
-		
+	}
+	
+}
+
+void train1data(Network *net, int epoch, double eta, double *input, double *expected){
+	for (int x = 0; x <= epoch; x++)
+	{
+		forward(net, input);
+		double *gradB = backpropB(net, expected);
+		backpropW(net, expected, 0);
+		apply_changes(net, eta, gradB);
+		free(gradB);
 	}
 	
 }

@@ -5,7 +5,7 @@
 
 void print_nn(Network *net){
 
-    printf("WeightIH: \n");
+    printf("\n\nWeightIH: \n");
     for (int i = 0; i < net->NumInput; i++)
     {
         for (int j = 0; j < net->NumHidden; j++)
@@ -47,18 +47,56 @@ void print_nn(Network *net){
         printf("%f ", net->Z2[i]);
         printf("%f ", net->Output[i]);
     }
+    printf("\n");
 }
 
 int main(){
-    double in[10] = {1,255,3,83,22,2,8,203,66,9};
-    double *input = in;
-    double expec[2] = {0,1};
-    double *expected = expec;
-    Network *net = init_nn(10,5,2,10,1);
+    
+    double in1[2] = {1,0};
+    double *in11 = in1;
+    double in2[2] = {0,1};
+    double *in22 = in2;
+    double in3[2] = {1,1};
+    double *in33 = in3;
+    double in4[2] = {0,0};
+    double *in44 = in4;
+    double **input = malloc(sizeof(double*) * 4);
+    input[0] = in11;
+    input[1] = in22;
+    input[2] = in33;
+    input[3] = in44;
+    
+    double ex1[1] = {1};
+    double *ex11 = ex1;
+    double ex2[1] = {1};
+    double *ex22 = ex2;
+    double ex3[1] = {0};
+    double *ex33 = ex3;
+    double ex4[1] = {0};
+    double *ex44 = ex4;
+    double **expected = malloc(sizeof(double*) * 4);
+    expected[0] = ex11;
+    expected[1] = ex22;
+    expected[2] = ex33;
+    expected[3] = ex44;
+    /* 
+    double In[2] = {1,1};
+    double *input = In;
+    double expected[1] = {0};
+    */
+   
+    Network *net = init_nn(2,5,1,10,4);
     print_nn(net);
-    forward(net,input);
+    //forward(net,input);
+    //forward(net, input[3]);
+    train(net, 1000000, 0.2, input, expected);
+    //train1data(net,1000,0.1,input,expected);
+    //forward(net,input);
+    forward(net, input[2]);
     print_nn(net);
-    train(net,10,0.1,input,expected);
-    forward(net,in);
+    forward(net, input[0]);
     print_nn(net);
+    free_nn(net);
+    free(input);
+    free(expected);
 }

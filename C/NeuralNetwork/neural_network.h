@@ -47,6 +47,6 @@ void train(Network *net, int epoch, double eta, double **input, double **expecte
 
 void save_nn(Network *net, char *path);
 
-
+void train1data(Network *net, int epoch, double eta, double *input, double *expected);
 
 #endif
