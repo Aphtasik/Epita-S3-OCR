@@ -1,5 +1,6 @@
 #include<stdio.h>
 #include "../Tools.h"
+//#include "../NeuralNetwork/neural_network.h"
 
 
 //AUTHOR: Alexandre GAUTIER
@@ -111,39 +112,6 @@ int Size(int *pProj, int lenList)
 }
 
 
-//return the biggeest line size
-/*int maxLineSize(int *pProjH, int lenList)
-{
-    int treshold = MaxBlackPxlOnLine(pProjH, lenList)/2;
-    int maxSize = 0;
-    int currentSize = 0;
-    int onSpree = 0;
-    int *p = pProjH;
-
-    for(int i = 0 ; i < lenList ; i++)
-    {
-        if(onSpree == 0 && *p > treshold)
-        {
-            onSpree = 1;
-            currentSize++;
-        }
-        else if (onSpree == 1 && *p > treshold)
-        {   
-            currentSize++;
-        }
-        else if (onSpree == 1 && *p < treshold)
-        {
-            if (currentSize > maxSize)
-            {
-                maxSize = currentSize;
-            }
-            onSpree = 0;
-            currentSize = 0;
-        }
-    }
-}*/
-
-
 //Count the total number of lines + paragraph in the text
 //Doesn't take in count of the last 0
 //We consider a jump to new paragraph when nb of 0 lines > (size of a line) *3
@@ -226,59 +194,107 @@ void ijMatrix(int* pProj, struct Matrix lineOrCharMatrix, int matrixLen, int siz
 
 
 void ReconstructText(struct Matrix picture)
-{
-    //Create ijMatrix according to the picture
+{   
+    //### Creation of all the Elements
+
+    //Line Segmentation
     int *pProjH = malloc(sizeof(int)*picture.rows);
+    HorizontalProjection(picture, pProjH);
+
     int lineSize = Size(pProjH, picture.rows);
     int lineElt = CountElt(picture.rows, lineSize, pProjH);
 
-    struct Matrix linesMatrix = CreateMatrix(lineElt, 2);
+    struct Matrix linesMatrix = CreateMatrix(lineElt,2);
     ijMatrix(pProjH, linesMatrix, picture.rows, lineSize);
 
-    int *linePtr = malloc(sizeof(int)*lineElt);
+    //Pointers that will help to iterate and get elements from characters matrixes
+    int **linePtr = malloc(sizeof(int)*lineElt);
     int *lineLen = malloc(sizeof(int)*lineElt);
 
-    for(int i = 0 ; i < lineElt+1 ; i++)
+    //Char Segmentation for each line
+    for(int i = 0 ; i < lineElt ; i++)
     {
-        int *pProjV = malloc(sizeof(int)*picture.columns);
-        int charSize = Size(pProjV, picture.columns);
-        int charElt = CountElt(picture.columns, charSize, pProjV);
+        if(MovePointerInMatrix(linesMatrix, i, 0) != (-1))
+        {
+            int *pProjV = malloc(sizeof(int)*picture.columns);
+            VerticalProjection(picture, MovePointerInMatrix(linesMatrix, i, 0), MovePointerInMatrix(linesMatrix, i, 1), pProjV);
 
-        struct Matrix charsMatrix = CreateMatrix(charElt, 2);
-        ijMatrix(pProjV, charsMatrix, picture.columns, charSize);
+            int charSize = Size(pProjV, picture.columns);
+            int charElt = CountElt(picture.columns, charSize, pProjV);
 
-        *(linePtr+i) = &charsMatrix;
-        *(lineLen+i) = charElt;
+            struct Matrix charMatrixToConvert = CreateMatrix(charElt,2);
+            ijMatrix(pProjV, charMatrixToConvert, picture.columns, charSize);
+
+            //We convert flatten the Matrix struct / TODO: Not effecient, need to be fixed
+            int *charMatrix = malloc(sizeof(int)*charElt*2);
+            for(int j = 0; j < charElt; j++)
+            {
+                for(int k = 0; k < 2; k++)
+                {
+                    *(charMatrix+j*2+k) = MovePointerInMatrix(charMatrixToConvert, j, k);
+                }
+            }
+
+            //attribution of the values in the pointed adresses
+            *(linePtr+i) = charMatrix; 
+            *(lineLen+i) = charElt;
+
+            /*printf("POINTER ELEMENTS CHARMAT\n");
+            for(int r = 0; r < charElt;r++)
+            {
+                for(int f = 0; f < 2; f++)
+                {
+                    printf(" %i ", *(charMatrix+r*2+f));
+                }
+                printf("\n");
+            }
+            printf("\n\n");
+
+            printf("POINTER ELEMENTS LINEPTR\n");
+            int *charMatPtr = *(linePtr+i);
+            for(int q = 0; q < charElt*2;q++)
+            {   
+                printf(" %i ", *(charMatPtr+q));
+            }
+            printf("\n\n");*/
+        }
     }
 
-    //TODO: Open file
-    //use the previous created matrix to create the file with text in it
-    for(int j = 0 ; j < linesMatrix.rows ; j++)
-    {
-        if (MovePointerInMatrix(linesMatrix, j, 0) == (-1))
+
+
+    //### Reacreate text in a text file
+
+    //TODO: Open file -> Replace all printf by insert character in text file
+    for(int k = 0 ; k < lineElt ; k++)
+    {   
+        if (MovePointerInMatrix(linesMatrix, k, 0) == (-1))
         {
             printf("\n    ");
         }
         else
         {
-            int im = MovePointerInMatrix(linesMatrix, j, 0);
-            int iM = MovePointerInMatrix(linesMatrix, j, 1);
-            int *pToJMat = linePtr+j;
-            int len = *(lineLen+j); //nb of char in 
+            int im = MovePointerInMatrix(linesMatrix, k, 0);
+            int iM = MovePointerInMatrix(linesMatrix, k, 1);
 
-            for(int k = 0; k < len ; k++)
+            int *charMat = *(linePtr+k);
+
+            int len = *(lineLen+k); //nb of char in the line 
+
+            for(int l = 0; l < len ; l++)
             {
-                if (*(pToJMat+(k*3)) == (-1))
+                //printf("elt = %i\n", *(charMat+1*2));
+                if (*(charMat+l*2) == (-1))
                 {
                     printf(" ");
                 }
                 else
                 {
-                    int jm = MovePointerInMatrix(linesMatrix, j, 0);
-                    int jM = MovePointerInMatrix(linesMatrix, j, 1);
+                    int jm = *(charMat+l*2);
+                    int jM = *(charMat+l*2+1);
 
                     //Recreate matrix and put it into neural net
-                    struct Matrix charMat = CreateMatrix(iM-im, jM-jm);
+                    //struct Matrix charBinMat = CreateMatrix(iM-im, jM-jm);
+                    printf("#");
                     //print char
                 }
                 
@@ -286,17 +302,8 @@ void ReconstructText(struct Matrix picture)
             printf("\n");
         }
     }
-    //TODO: Close file
 
 }
-
-
-//Reacreate Matrix -> Prend imin imax, jmin jmax et la picture pour refaire la matrice de l'endroit correspondant
-struct Matrix RecreateMatrix(struct Matrix picture, int iMin, int iMax, int jMin, int jMax)
-{
-    struct Matrix charMat = CreateMatrix(iMax-iMin, jMax-jMin);
-}
-//
 
 
 int main()
@@ -311,7 +318,7 @@ int main()
     ChangeEltInMatrix(matrix, 6,2,1);
     ChangeEltInMatrix(matrix, 6,1,1);*/
 
-    struct Matrix matrix = CreateMatrix(2,10);
+    /*struct Matrix matrix = CreateMatrix(2,10);
     ChangeEltInMatrix(matrix, 0,2,1);
     ChangeEltInMatrix(matrix, 0,1,1);
     ChangeEltInMatrix(matrix, 0,8,1);
@@ -320,7 +327,59 @@ int main()
     ChangeEltInMatrix(matrix, 1,2,1);
     ChangeEltInMatrix(matrix, 1,1,1);
     ChangeEltInMatrix(matrix, 1,8,1);
-    ChangeEltInMatrix(matrix, 1,7,1);
+    ChangeEltInMatrix(matrix, 1,7,1);*/
+
+    /*struct Matrix matrix = CreateMatrix(11, 11);
+    ChangeEltInMatrix(matrix, 1,2,1);
+    ChangeEltInMatrix(matrix, 1,3,1);
+    ChangeEltInMatrix(matrix, 2,2,1);
+    ChangeEltInMatrix(matrix, 2,3,1);
+
+    ChangeEltInMatrix(matrix, 1,8,1);
+    ChangeEltInMatrix(matrix, 1,9,1);
+    ChangeEltInMatrix(matrix, 2,8,1);
+    ChangeEltInMatrix(matrix, 2,9,1);
+
+    ChangeEltInMatrix(matrix, 7,1,1);
+    ChangeEltInMatrix(matrix, 7,2,1);
+    ChangeEltInMatrix(matrix, 8,1,1);
+    ChangeEltInMatrix(matrix, 8,2,1);
+
+    ChangeEltInMatrix(matrix, 7,7,1);
+    ChangeEltInMatrix(matrix, 7,8,1);
+    ChangeEltInMatrix(matrix, 8,7,1);
+    ChangeEltInMatrix(matrix, 8,8,1);*/
+
+    struct Matrix matrix = CreateMatrix(16, 11);
+    ChangeEltInMatrix(matrix, 1,2,1);
+    ChangeEltInMatrix(matrix, 1,3,1);
+    ChangeEltInMatrix(matrix, 2,2,1);
+    ChangeEltInMatrix(matrix, 2,3,1);
+
+    ChangeEltInMatrix(matrix, 1,8,1);
+    ChangeEltInMatrix(matrix, 1,9,1);
+    ChangeEltInMatrix(matrix, 2,8,1);
+    ChangeEltInMatrix(matrix, 2,9,1);
+
+    ChangeEltInMatrix(matrix, 7,1,1);
+    ChangeEltInMatrix(matrix, 7,2,1);
+    ChangeEltInMatrix(matrix, 8,1,1);
+    ChangeEltInMatrix(matrix, 8,2,1);
+
+    ChangeEltInMatrix(matrix, 7,7,1);
+    ChangeEltInMatrix(matrix, 7,8,1);
+    ChangeEltInMatrix(matrix, 8,7,1);
+    ChangeEltInMatrix(matrix, 8,8,1);
+
+    ChangeEltInMatrix(matrix, 12,3,1);
+    ChangeEltInMatrix(matrix, 12,4,1);
+    ChangeEltInMatrix(matrix, 13,3,1);
+    ChangeEltInMatrix(matrix, 13,4,1);
+
+    ChangeEltInMatrix(matrix, 12,7,1);
+    ChangeEltInMatrix(matrix, 12,8,1);
+    ChangeEltInMatrix(matrix, 13,7,1);
+    ChangeEltInMatrix(matrix, 13,8,1);
 
     PrintMatrix(matrix);
     printf("\n");
@@ -397,5 +456,8 @@ int main()
     ijMatrix(pProjV, charsMatrix, matrix.columns, charSize);
     PrintMatrix(charsMatrix);
     printf("\n");
+
+    //TEST reconstruct
+    ReconstructText(matrix);
 
 }
