@@ -193,6 +193,18 @@ void ijMatrix(int* pProj, struct Matrix lineOrCharMatrix, int matrixLen, int siz
 }
 
 
+void RecreateMatrix(struct Matrix picture, int *ptr, int iMin, int iMax, int jMin, int jMax)
+{
+    for(int i = iMin ; i <= iMax; i++)
+    {
+        for(int j = jMin; j <= jMax; j++)
+        {
+            *(ptr+i*(jMax-jMin+1)+j) = MovePointerInMatrix(picture, i, j);
+        }
+    }
+}
+
+
 void ReconstructText(struct Matrix picture)
 {   
     //### Creation of all the Elements
@@ -264,12 +276,20 @@ void ReconstructText(struct Matrix picture)
 
     //### Reacreate text in a text file
 
-    //TODO: Open file -> Replace all printf by insert character in text file
+    FILE *fptr;
+    fptr = fopen("OCR", "w");
+    if (fptr == NULL)
+    {
+        printf("Error!");
+        exit(1);
+    }
+    fprintf(fptr, "    ");
+
     for(int k = 0 ; k < lineElt ; k++)
     {   
         if (MovePointerInMatrix(linesMatrix, k, 0) == (-1))
         {
-            printf("\n    ");
+            fprintf(fptr, "\n    ");
         }
         else
         {
@@ -285,24 +305,23 @@ void ReconstructText(struct Matrix picture)
                 //printf("elt = %i\n", *(charMat+1*2));
                 if (*(charMat+l*2) == (-1))
                 {
-                    printf(" ");
+                    fprintf(fptr, " ");
                 }
                 else
                 {
                     int jm = *(charMat+l*2);
                     int jM = *(charMat+l*2+1);
 
-                    //Recreate matrix and put it into neural net
-                    //struct Matrix charBinMat = CreateMatrix(iM-im, jM-jm);
-                    printf("#");
-                    //print char
+                    int *ptr = calloc(90000, sizeof(int));
+                    RecreateMatrix(picture, ptr, im, iM, jm, jM);
+                    //TODO: passer dans le bail à Mathis, prendre le char et le mettre ds fichier a la place de #
+                    fprintf(fptr, "#");
+                    free(ptr);
                 }
-                
             }
-            printf("\n");
+            fprintf(fptr, "\n");
         }
     }
-
 }
 
 
