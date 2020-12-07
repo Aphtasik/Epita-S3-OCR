@@ -2,19 +2,36 @@
 #include <stdlib.h>
 #include "neural_network.h"
 
+// AUTHOR: Mathis Guilbaud
 
+//simple sigmoid function
 double sigmoid(double x){
 	return (1.0 / (1.0 + exp(-x)));
 }
 
+//derivative of the sigmoid function
 double dsigmoid(double x){
 	return (sigmoid(x)*(1 - sigmoid(x)));
 }
 
+//random function to initialize weights and biases
 double random(){
 	return (double)rand()/((double)RAND_MAX);
 }
 
+//function used to shuffle input data for a better learning 
+void shuffle(double **input, int Inputlength){
+	double* tmp;
+	int pos = 0;
+	for(int i = 0; i < Inputlength - 1; i++){
+		pos                = rand() % (Inputlength - i - 1);
+		tmp                = input[pos];
+		input[pos]         = input[Inputlength - i - 1];
+		input[Inputlength - i - 1] = tmp;
+	}
+}
+
+// free all the network component and the network
 void free_nn(Network *net){
 	free(net->Input);
 	for(int i = 0; i < net->NumInput; i++){
@@ -41,6 +58,7 @@ void free_nn(Network *net){
 	free(net);
 }
 
+// save the neural network component in a text file
 void save_nn(Network *net, char* filepath){
 	FILE *nr = fopen(filepath, "w+");
 	if(nr == NULL){
@@ -52,7 +70,7 @@ void save_nn(Network *net, char* filepath){
 	fprintf(nr, "%d\n", net->Batch_size);
 	fprintf(nr, "%d\n", net->NbTrainingData); //WARNING : modify it according to the nb of training data
 
-	for(int i = 0; i < net->NumInput  + 1; i++){
+	for(int i = 0; i < net->NumInput ; i++){
 		for(int j = 0; j < net->NumHidden;j++){
 			fprintf(nr,"%lf\n", net->GradWeightIH[i][j]);
 			fprintf(nr,"%lf\n", net->WeightIH[i][j]);
@@ -79,6 +97,7 @@ void save_nn(Network *net, char* filepath){
 	free_nn(net);
 }
 
+//load a neural network from a text file
 Network *load_nn(char* filepath){
 	Network *net = malloc(sizeof(Network));
 	FILE *nr = fopen(filepath, "r");
@@ -126,6 +145,7 @@ Network *load_nn(char* filepath){
 	//}
 	fclose(nr);
 
+	net->Input = malloc(sizeof(double) * net->NumInput);
 	net->Z1 = calloc(sizeof(double),net->NumHidden);
 	net->A1 = calloc(sizeof(double),net->NumHidden);
 
@@ -137,6 +157,7 @@ Network *load_nn(char* filepath){
 	return net;
 }
 
+// initialize a neural network
 Network *init_nn(int nbI, int nbH, int nbO, int batch_size, int nbtrainingdata){
 
 	Network *net = malloc(sizeof(Network));
@@ -206,6 +227,7 @@ Network *init_nn(int nbI, int nbH, int nbO, int batch_size, int nbtrainingdata){
 	return net;
 }
 
+// compute the forward propagation of the neural network
 void forward(Network *net ,double *input){
 	for (int i = 0; i < net->NumInput; i++)
 	{
@@ -241,6 +263,7 @@ void forward(Network *net ,double *input){
 		
 }
 
+//This function compute the gradients of all weights and put it into the grad arrays of the network
 void backpropW(Network *net, double *expected,int batch_index){
 
 	for (int k = 0; k < net->NumOutput; k++)
@@ -304,6 +327,7 @@ void backpropW(Network *net, double *expected,int batch_index){
 	free(dzwWIH);
 }
 
+// This function compute the gradient of all the biases of the network
 double* backpropB(Network *net, double *expected){
 	double *gradB = calloc(sizeof(double), net->NumHidden + net->NumOutput);
 
@@ -367,7 +391,7 @@ void apply_changes(Network *net, double eta, double *gradB){
 	{
 		net->BiasH[j] -= eta * gradB[j];
 	}
-	//TODO : reinitialize the arrays
+	//reinitializing the arrays
 	for (int j = 0; j < net->NumHidden; j++)
 	{
 		net->Z1[j] = 0;
@@ -377,14 +401,16 @@ void apply_changes(Network *net, double eta, double *gradB){
 		net->Z2[k] = 0;
 	}
 
-	//printf("error: %f ", net->Error[0]);
+	printf("error: %f ", net->Error[0]);
 	net->Error[0] = 0;
 
 }
 
+//function that train the neural network [epoch] times
 void train(Network *net, int epoch, double eta, double **input, double **expected){
 	for (int x = 0; x < epoch; x++)
 	{
+		//shuffle(input, net->NbTrainingData);
 		for (int y = 0; y < net->NbTrainingData; y++)
 		{
 			forward(net, input[y]);
@@ -398,6 +424,7 @@ void train(Network *net, int epoch, double eta, double **input, double **expecte
 }
 
 void train1data(Network *net, int epoch, double eta, double *input, double *expected){
+
 	for (int x = 0; x <= epoch; x++)
 	{
 		forward(net, input);
@@ -407,4 +434,17 @@ void train1data(Network *net, int epoch, double eta, double *input, double *expe
 		free(gradB);
 	}
 	
+}
+
+char predictchar(Network *net, double *input){
+	char alphabet[62] = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+	forward(net, input);
+	int ires = 0;
+	for (int k = 0; k < net->NumOutput; k++)
+	{
+		if(net->Output[k] >= 0.5){
+			ires = k;
+		}
+	}
+	return alphabet[ires];
 }

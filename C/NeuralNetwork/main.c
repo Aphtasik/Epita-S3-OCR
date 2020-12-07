@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "neural_network.h"
-#include "matrix_fn/matrix.h"
 
 void print_nn(Network *net){
 
@@ -51,7 +50,9 @@ void print_nn(Network *net){
 }
 
 int main(){
-    
+
+   // fonction xor 
+   
     double in1[2] = {1,0};
     double *in11 = in1;
     double in2[2] = {0,1};
@@ -79,24 +80,46 @@ int main(){
     expected[1] = ex22;
     expected[2] = ex33;
     expected[3] = ex44;
-    /* 
+    
+   /*  
     double In[2] = {1,1};
+    double In2[2] = {0,1};
+    double *input2 = In2;
     double *input = In;
     double expected[1] = {0};
+    double expected2[1] = {1};
     */
    
-    Network *net = init_nn(2,5,1,10,4);
+    Network *net = init_nn(2,2,1,10,4);
+    //Network *net = load_nn("nn");
     print_nn(net);
     //forward(net,input);
-    //forward(net, input[3]);
-    train(net, 1000000, 0.2, input, expected);
-    //train1data(net,1000,0.1,input,expected);
+    forward(net, input[3]);
+    train(net, 100000, 0.5, input, expected);
+    //train1data(net,1000,0.1,input2,expected2);
     //forward(net,input);
     forward(net, input[2]);
     print_nn(net);
+    //forward(net, input2);
     forward(net, input[0]);
     print_nn(net);
-    free_nn(net);
+    //free_nn(net);
+    save_nn(net, "nn");
     free(input);
     free(expected);
+
+    //fin fonction xor
+
+    //character recognition
+    /*
+    int nbtrainingdata;
+    double **chartraining;
+    double **charexpected;
+    double *charexample;
+    Network *net = init_nn(256, 150, 58, 1, nbtrainingdata);
+    load_nn("nn");
+    train(net, 100000, 0.2, chartrainingdata, charexpected);
+    predictchar(net, charexample);
+    */
+
 }
