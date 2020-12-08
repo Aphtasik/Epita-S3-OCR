@@ -2,7 +2,7 @@
 #define SEGMENTATION_H
 
 #include<stdio.h>
-#include"Tools.h"
+#include"../Tools/Tools.h"
 
 void HorizontalProjection(struct Matrix matrix, int* pList);
 void VerticalProjection(struct Matrix matrix, int minIndex, int maxIndex, int* pList);

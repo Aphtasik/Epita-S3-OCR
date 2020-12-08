@@ -1,5 +1,5 @@
 #include<stdio.h>
-#include "Tools.h"
+#include "../Tools/Tools.h"
 //#include "../NeuralNetwork/neural_network.h"
 
 

@@ -1,6 +1,6 @@
 #include<stdio.h>
-#include"Segmentation.h"
-#include "Tools.h"
+#include"Segmentation_Rebuild/Segmentation.h"
+#include "Tools/Tools.h"
 
 int main()
 {
