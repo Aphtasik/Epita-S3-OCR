@@ -1,7 +1,6 @@
 #include<stdio.h>
-#include "Tools.h"
 #include"Segmentation.h"
-#include "NeuralNetwork/neural_network.h"
+#include "Tools.h"
 
 int main()
 {
@@ -38,8 +37,7 @@ int main()
 
     PrintMatrix(matrix);
     printf("\n");
-    
-    
+
     int *pProjH = malloc(sizeof(int)*matrix.rows);
     int *pProjV = malloc(sizeof(int)*matrix.columns);
 
