@@ -40,7 +40,6 @@ void free_nn();
 
 double random();
 
-
 void forward(Network *net, double *input);
 
 char predictchar(Network *net, double *input);

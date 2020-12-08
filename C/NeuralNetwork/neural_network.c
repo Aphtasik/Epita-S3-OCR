@@ -19,6 +19,7 @@ double random(){
 	return (double)rand()/((double)RAND_MAX);
 }
 
+
 //function used to shuffle input data for a better learning 
 void shuffle(double **input, int Inputlength){
 	double* tmp;
@@ -401,7 +402,7 @@ void apply_changes(Network *net, double eta, double *gradB){
 		net->Z2[k] = 0;
 	}
 
-	printf("error: %f ", net->Error[0]);
+	//printf("error: %f ", net->Error[0]);
 	net->Error[0] = 0;
 
 }
