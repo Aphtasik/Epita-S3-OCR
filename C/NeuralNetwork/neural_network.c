@@ -14,8 +14,8 @@ double dsigmoid(double x){
 	return (sigmoid(x)*(1 - sigmoid(x)));
 }
 
-//random function to initialize weights and biases
-double random(){
+//randomize function to initialize weights and biases
+double randomize(){
 	return (double)rand()/((double)RAND_MAX);
 }
 
@@ -181,7 +181,7 @@ Network *init_nn(int nbI, int nbH, int nbO, int batch_size, int nbtrainingdata){
 	}
 	for(int i = 0; i < net->NumInput; i++){
 		for(int j=0; j < net->NumHidden; j++){
-			net->WeightIH[i][j] = random();
+			net->WeightIH[i][j] = randomize();
 		}
 	}
 
@@ -195,7 +195,7 @@ Network *init_nn(int nbI, int nbH, int nbO, int batch_size, int nbtrainingdata){
 	if(net->BiasH == NULL)
 		return NULL;
 	for(int i=0; i < net->NumHidden; i++){
-		net->BiasH[i] = random();
+		net->BiasH[i] = randomize();
 	}
 
 	net->WeightHO = malloc(sizeof(double*) * net->NumHidden);
@@ -206,7 +206,7 @@ Network *init_nn(int nbI, int nbH, int nbO, int batch_size, int nbtrainingdata){
 	}
 	for(int j = 0; j < net->NumHidden; j++){
 		for(int k=0; k < net->NumOutput; k++){
-			net->WeightHO[j][k] = random();
+			net->WeightHO[j][k] = randomize();
 		}
 	}
 
@@ -214,7 +214,7 @@ Network *init_nn(int nbI, int nbH, int nbO, int batch_size, int nbtrainingdata){
 	if(net->BiasO == NULL)
 		return NULL;
 	for(int k=0; k < net->NumOutput; k++){
-		net->BiasO[k] = random();
+		net->BiasO[k] = randomize();
 	}
 
 	net->Z2 = calloc(net->NumOutput, sizeof(double));

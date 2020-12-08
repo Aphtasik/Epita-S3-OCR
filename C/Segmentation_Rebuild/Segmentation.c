@@ -1,6 +1,5 @@
 #include<stdio.h>
-#include "../Tools/Tools.h"
-//#include "../NeuralNetwork/neural_network.h"
+#include"Segmentation.h"
 
 
 //AUTHOR: Alexandre GAUTIER
@@ -193,7 +192,7 @@ void ijMatrix(int* pProj, struct Matrix lineOrCharMatrix, int matrixLen, int siz
 }
 
 
-void RecreateMatrix(struct Matrix picture, int *ptr, int iMin, int iMax, int jMin, int jMax)
+void RecreateMatrix(struct Matrix picture, double *ptr, int iMin, int iMax, int jMin, int jMax)
 {
     for(int i = iMin ; i <= iMax; i++)
     {
@@ -275,6 +274,7 @@ void ReconstructText(struct Matrix picture)
 
 
     //### Reacreate text in a text file
+    Network *net = init_nn(900, 150, 62, 10, 1);
 
     FILE *fptr;
     fptr = fopen("OCR", "w");
@@ -312,10 +312,11 @@ void ReconstructText(struct Matrix picture)
                     int jm = *(charMat+l*2);
                     int jM = *(charMat+l*2+1);
 
-                    int *ptr = calloc(90000, sizeof(int));
+                    double *ptr = calloc(900, sizeof(int));
                     RecreateMatrix(picture, ptr, im, iM, jm, jM);
+                    char c = predictchar(net, ptr);
                     //TODO: passer dans le bail à Mathis, prendre le char et le mettre ds fichier a la place de #
-                    fprintf(fptr, "#");
+                    fprintf(fptr, "%c", c);
                     free(ptr);
                 }
             }

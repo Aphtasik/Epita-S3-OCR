@@ -38,7 +38,7 @@ Network *init_nn(int nbI, int nbH, int nbO, int batch_size, int nbtrainingdata);
 
 void free_nn();
 
-double random();
+double randomize();
 
 void forward(Network *net, double *input);
 
