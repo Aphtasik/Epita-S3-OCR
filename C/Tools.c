@@ -26,7 +26,7 @@ struct Matrix CreateMatrix(int rows, int columns)
 //check if x,y is in in bound
 int IsInMatrix(struct Matrix matrix, int x, int y)
 {
-    return(x < matrix.rows, matrix.columns);
+    return(x < matrix.rows, y < matrix.columns);
 }
 
 

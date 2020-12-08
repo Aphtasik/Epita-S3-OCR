@@ -1,6 +1,6 @@
 #include<stdio.h>
-#include "../Tools.h"
-//#include "../NeuralNetwork/neural_network.h"
+#include "Tools.h"
+#include "NeuralNetwork/neural_network.h"
 
 
 //AUTHOR: Alexandre GAUTIER
@@ -156,7 +156,6 @@ void ijMatrix(int* pProj, struct Matrix lineOrCharMatrix, int matrixLen, int siz
     int onSpree = 0;
     int nbVoid = 0;
     int indexIList = 0;
-    int k = 0;
 
     int *p = pProj;
 
@@ -193,7 +192,7 @@ void ijMatrix(int* pProj, struct Matrix lineOrCharMatrix, int matrixLen, int siz
 }
 
 
-void RecreateMatrix(struct Matrix picture, int *ptr, int iMin, int iMax, int jMin, int jMax)
+void RecreateMatrix(struct Matrix picture, double *ptr, int iMin, int iMax, int jMin, int jMax)
 {
     for(int i = iMin ; i <= iMax; i++)
     {
@@ -276,7 +275,8 @@ void ReconstructText(struct Matrix picture)
 
     //### Reacreate text in a text file
 
-    FILE *fptr;
+    Network *net = init_nn(900, 150, 62, 10, 1); //NEURAL NET
+    FILE *fptr; //FILE TO WRITE IN
     fptr = fopen("OCR", "w");
     if (fptr == NULL)
     {
@@ -312,10 +312,12 @@ void ReconstructText(struct Matrix picture)
                     int jm = *(charMat+l*2);
                     int jM = *(charMat+l*2+1);
 
-                    int *ptr = calloc(90000, sizeof(int));
+                    double *ptr = calloc(900, sizeof(int));
                     RecreateMatrix(picture, ptr, im, iM, jm, jM);
+                    forward(net, ptr);
+                    char c = predictchar(net, ptr);
                     //TODO: passer dans le bail à Mathis, prendre le char et le mettre ds fichier a la place de #
-                    fprintf(fptr, "#");
+                    fprintf(fptr, "%c", c);
                     free(ptr);
                 }
             }
@@ -327,48 +329,6 @@ void ReconstructText(struct Matrix picture)
 
 int main()
 {
-    /*struct Matrix matrix = CreateMatrix(8,4);
-    ChangeEltInMatrix(matrix, 1,2,1);
-    ChangeEltInMatrix(matrix, 1,1,1);
-
-    ChangeEltInMatrix(matrix, 5,2,1);
-    ChangeEltInMatrix(matrix, 5,1,1);
-
-    ChangeEltInMatrix(matrix, 6,2,1);
-    ChangeEltInMatrix(matrix, 6,1,1);*/
-
-    /*struct Matrix matrix = CreateMatrix(2,10);
-    ChangeEltInMatrix(matrix, 0,2,1);
-    ChangeEltInMatrix(matrix, 0,1,1);
-    ChangeEltInMatrix(matrix, 0,8,1);
-    ChangeEltInMatrix(matrix, 0,7,1);
-
-    ChangeEltInMatrix(matrix, 1,2,1);
-    ChangeEltInMatrix(matrix, 1,1,1);
-    ChangeEltInMatrix(matrix, 1,8,1);
-    ChangeEltInMatrix(matrix, 1,7,1);*/
-
-    /*struct Matrix matrix = CreateMatrix(11, 11);
-    ChangeEltInMatrix(matrix, 1,2,1);
-    ChangeEltInMatrix(matrix, 1,3,1);
-    ChangeEltInMatrix(matrix, 2,2,1);
-    ChangeEltInMatrix(matrix, 2,3,1);
-
-    ChangeEltInMatrix(matrix, 1,8,1);
-    ChangeEltInMatrix(matrix, 1,9,1);
-    ChangeEltInMatrix(matrix, 2,8,1);
-    ChangeEltInMatrix(matrix, 2,9,1);
-
-    ChangeEltInMatrix(matrix, 7,1,1);
-    ChangeEltInMatrix(matrix, 7,2,1);
-    ChangeEltInMatrix(matrix, 8,1,1);
-    ChangeEltInMatrix(matrix, 8,2,1);
-
-    ChangeEltInMatrix(matrix, 7,7,1);
-    ChangeEltInMatrix(matrix, 7,8,1);
-    ChangeEltInMatrix(matrix, 8,7,1);
-    ChangeEltInMatrix(matrix, 8,8,1);*/
-
     struct Matrix matrix = CreateMatrix(16, 11);
     ChangeEltInMatrix(matrix, 1,2,1);
     ChangeEltInMatrix(matrix, 1,3,1);
@@ -402,7 +362,8 @@ int main()
 
     PrintMatrix(matrix);
     printf("\n");
-
+    
+    
     int *pProjH = malloc(sizeof(int)*matrix.rows);
     int *pProjV = malloc(sizeof(int)*matrix.columns);
 
