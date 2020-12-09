@@ -44,7 +44,7 @@ void forward(Network *net, double *input);
 
 char predictchar(Network *net, double *input);
 
-void train(Network *net, int epoch, double eta, double **input, double **expected);
+void train(Network *net, int epoch, double eta, double **input, double **expected, char *filepath);
 
 void save_nn(Network *net, char *path);
 

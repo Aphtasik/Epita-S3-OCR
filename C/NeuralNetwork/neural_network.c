@@ -408,7 +408,7 @@ void apply_changes(Network *net, double eta, double *gradB){
 }
 
 //function that train the neural network [epoch] times
-void train(Network *net, int epoch, double eta, double **input, double **expected){
+void train(Network *net, int epoch, double eta, double **input, double **expected, char *filepath){
 	for (int x = 0; x < epoch; x++)
 	{
 		//shuffle(input, net->NbTrainingData);
@@ -421,7 +421,7 @@ void train(Network *net, int epoch, double eta, double **input, double **expecte
 			free(gradB);
 		}
 	}
-	
+	save_nn(net, filepath);
 }
 
 void train1data(Network *net, int epoch, double eta, double *input, double *expected){
@@ -438,7 +438,7 @@ void train1data(Network *net, int epoch, double eta, double *input, double *expe
 }
 
 char predictchar(Network *net, double *input){
-	char alphabet[62] = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+	char alphabet[68] = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!.?:()";
 	forward(net, input);
 	int ires = 0;
 	for (int k = 0; k < net->NumOutput; k++)
