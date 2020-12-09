@@ -141,7 +141,6 @@ void ijMatrix(int* pProj, struct Matrix lineOrCharMatrix, int matrixLen, int siz
     int onSpree = 0;
     int nbVoid = 0;
     int indexIList = 0;
-    int k = 0;
 
     int *p = pProj;
 
