@@ -2,6 +2,7 @@
 #include"Segmentation_Rebuild/trainingSegmentation.h"
 #include"Segmentation_Rebuild/Segmentation.h"
 #include "Tools/Tools.h"
+#include"NeuralNetwork/neural_network.h"
 
 int main()
 {
@@ -59,7 +60,7 @@ int main()
     ChangeEltInMatrix(matrix, 12,7,1);
     ChangeEltInMatrix(matrix, 12,8,1);
     ChangeEltInMatrix(matrix, 13,7,1);
-    ChangeEltInMatrix(matrix, 13,8,1);*/
+    ChangeEltInMatrix(matrix, 13,8,1);
 
     PrintMatrix(matrix);
     printf("\n");
@@ -135,20 +136,26 @@ int main()
     struct Matrix charsMatrix = CreateMatrix(charElt,2);
     ijMatrix(pProjV, charsMatrix, matrix.columns, charSize);
     PrintMatrix(charsMatrix);
-    printf("\n");
+    printf("\n");*/
 
     //TEST reconstruct
     ReconstructText(matrix);
 
     //TRAINING
-    FILE *fptr;
-    if (fptr == NULL)
+    /*double **expected = malloc(sizeof(double*)*68);
+    for(int i = 0; i < 68; i++)
     {
-        printf("Error!");
-        exit(1);
+        expected[i] = calloc(sizeof(double), 68);
+        expected[i][i] = 1.0;
     }
-    fptr = fopen("TrainingData", "w");
-    fclose(fptr);
-    
 
+    Network *net = init_nn(900, 150, 68, 10, 68);
+    double **pAllChar = ReconstructTextTraining(matrix);
+    train(net, 3, 0.3, pAllChar, expected, "TrainingData");
+
+    for(int i = 0; i < 68; i++)
+    {
+        free(expected[i]);
+    }
+    free(expected);*/
 }

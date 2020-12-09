@@ -1,10 +1,9 @@
 #include<stdio.h>
 #include"trainingSegmentation.h"
 
-void ReconstructTextTraining(struct Matrix picture)
+double ** ReconstructTextTraining(struct Matrix picture)
 {   
     //### Creation of all the Elements
-
     //Line Segmentation
     int *pProjH = malloc(sizeof(int)*picture.rows);
     HorizontalProjection(picture, pProjH);
@@ -53,7 +52,7 @@ void ReconstructTextTraining(struct Matrix picture)
     //### Reacreate text in a text file
     double **pAllChar = malloc(sizeof(double*)*68);
     Network *net = init_nn(900, 150, 62, 10, 1);
-    
+
     for(int k = 0 ; k < lineElt ; k++)
     {   
         if (MovePointerInMatrix(linesMatrix, k, 0) != (-1))
@@ -88,4 +87,6 @@ void ReconstructTextTraining(struct Matrix picture)
     free(lineLen);
     free(linePtr);
     free(linesMatrix.pmatrix);
+
+    return pAllChar;
 }

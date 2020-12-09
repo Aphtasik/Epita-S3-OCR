@@ -6,6 +6,6 @@
 #include "../NeuralNetwork/neural_network.h"
 #include"Segmentation.h"
 
-void ReconstructTextTraining(struct Matrix picture);
+double ** ReconstructTextTraining(struct Matrix picture);
 
 #endif
