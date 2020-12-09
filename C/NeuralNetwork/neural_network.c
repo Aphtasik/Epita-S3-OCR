@@ -19,19 +19,6 @@ double randomize(){
 	return (double)rand()/((double)RAND_MAX);
 }
 
-
-//function used to shuffle input data for a better learning 
-void shuffle(double **input, int Inputlength){
-	double* tmp;
-	int pos = 0;
-	for(int i = 0; i < Inputlength - 1; i++){
-		pos                = rand() % (Inputlength - i - 1);
-		tmp                = input[pos];
-		input[pos]         = input[Inputlength - i - 1];
-		input[Inputlength - i - 1] = tmp;
-	}
-}
-
 // free all the network component and the network
 void free_nn(Network *net){
 	free(net->Input);
@@ -403,11 +390,10 @@ void apply_changes(Network *net, double eta, double *gradB){
 }
 
 //function that train the neural network [epoch] times
-void train(Network *net, int epoch, double eta, int NbTrainingData, double **input, double **expected, char *filepath){
-	net->NbTrainingData = NbTrainingData;
+void train(Network *net, int epoch, double eta, int nbtrainingdata, double **input, double **expected, char *filepath){
+	net->NbTrainingData = nbtrainingdata;
 	for (int x = 0; x < epoch; x++)
 	{
-		//shuffle(input, net->NbTrainingData);
 		for (int y = 0; y < net->NbTrainingData; y++)
 		{
 			forward(net, input[y]);

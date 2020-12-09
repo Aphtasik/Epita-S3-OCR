@@ -144,9 +144,11 @@ int main(){
         expected[i] = calloc(sizeof(double), 68);
         expected[i][i] = 1.0;
     }
-    
     train(net, 2, 0.3, 68, input, expected, "nn");
-
+    //predictchar(net, input[0]);
+    //print_nn(net);
+    
+    //free_nn(net, "nn");
     for(int i = 0; i < 68; i++){
         free(expected[i]);
         free(input[i]);

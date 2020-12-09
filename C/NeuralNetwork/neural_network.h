@@ -43,7 +43,7 @@ void forward(Network *net, double *input);
 
 char predictchar(Network *net, double *input);
 
-void train(Network *net, int epoch, double eta, int NbTrainingData, double **input, double **expected, char *filepath);
+void train(Network *net, int epoch, double eta, int nbtrainingdata, double **input, double **expected, char *filepath);
 
 void save_nn(Network *net, char *path);
 
