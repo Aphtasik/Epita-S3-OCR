@@ -9,8 +9,8 @@ typedef struct Network{
 	int NumInput;
 	int NumHidden;
 	int NumOutput;
-	int Batch_size;
 	int NbTrainingData;
+	double Error; //erreur du réseau
 
 	//first layer:
 	double *Input; //tableau des Input
@@ -28,13 +28,12 @@ typedef struct Network{
 	double *Z2;
 	double *Output; //tableau de la sortie du réseau
 	double *BiasO; //tableau de biais de l'Output
-	double *Error; //tableau des erreur de taille nbtrainingdata
 	
 } Network;
 /*
 Network *load_nn(char *filepath);
 */
-Network *init_nn(int nbI, int nbH, int nbO, int batch_size, int nbtrainingdata);
+Network *init_nn(int nbI, int nbH, int nbO);
 
 void free_nn();
 
@@ -44,7 +43,7 @@ void forward(Network *net, double *input);
 
 char predictchar(Network *net, double *input);
 
-void train(Network *net, int epoch, double eta, double **input, double **expected, char *filepath);
+void train(Network *net, int epoch, double eta, int NbTrainingData, double **input, double **expected, char *filepath);
 
 void save_nn(Network *net, char *path);
 

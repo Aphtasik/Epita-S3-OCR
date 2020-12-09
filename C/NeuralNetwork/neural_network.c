@@ -55,7 +55,6 @@ void free_nn(Network *net){
 	free(net->BiasO);
 	free(net->Z2);
 	free(net->Output);
-	free(net->Error);
 	free(net);
 }
 
@@ -68,8 +67,6 @@ void save_nn(Network *net, char* filepath){
 	fprintf(nr, "%d\n", net->NumInput);
 	fprintf(nr, "%d\n", net->NumHidden);
 	fprintf(nr, "%d\n", net->NumOutput);
-	fprintf(nr, "%d\n", net->Batch_size);
-	fprintf(nr, "%d\n", net->NbTrainingData); //WARNING : modify it according to the nb of training data
 
 	for(int i = 0; i < net->NumInput ; i++){
 		for(int j = 0; j < net->NumHidden;j++){
@@ -109,7 +106,6 @@ Network *load_nn(char* filepath){
 	fscanf(nr, "%d\n", &net->NumInput);
 	fscanf(nr, "%d\n", &net->NumHidden);
 	fscanf(nr, "%d\n", &net->NumOutput);
-	fscanf(nr, "%d\n", &net->Batch_size);
 	fscanf(nr, "%d\n", &net->NbTrainingData); //WARNING : modify it according to the nb of training data
 	net->GradWeightIH = malloc(sizeof(double *) * net->NumInput);
 	net->WeightIH      = malloc(sizeof(double *) * net->NumInput);
@@ -153,13 +149,13 @@ Network *load_nn(char* filepath){
 	net->Z2 = calloc(sizeof(double),net->NumOutput);
 	net->Output = calloc(sizeof(double),net->NumOutput);
 
-	net->Error = calloc(sizeof(double), net->Batch_size);
+	net->Error = 0;
 
 	return net;
 }
 
 // initialize a neural network
-Network *init_nn(int nbI, int nbH, int nbO, int batch_size, int nbtrainingdata){
+Network *init_nn(int nbI, int nbH, int nbO){
 
 	Network *net = malloc(sizeof(Network));
 	if(net == NULL)
@@ -168,8 +164,7 @@ Network *init_nn(int nbI, int nbH, int nbO, int batch_size, int nbtrainingdata){
 	net->NumInput = nbI;	
 	net->NumHidden = nbH;
 	net->NumOutput = nbO;
-	net->Batch_size = batch_size;
-	net->NbTrainingData = nbtrainingdata;
+	net->NbTrainingData = 1;
 
 	net->Input = malloc(sizeof(double) * net->NumInput);
 
@@ -223,7 +218,7 @@ Network *init_nn(int nbI, int nbH, int nbO, int batch_size, int nbtrainingdata){
 	if(net->Output == NULL)
 		return NULL;
 
-	net->Error = calloc(net->Batch_size, sizeof(double));
+	net->Error = 0;
 
 	return net;
 }
@@ -265,11 +260,11 @@ void forward(Network *net ,double *input){
 }
 
 //This function compute the gradients of all weights and put it into the grad arrays of the network
-void backpropW(Network *net, double *expected,int batch_index){
+void backpropW(Network *net, double *expected){
 
 	for (int k = 0; k < net->NumOutput; k++)
 	{
-		net->Error[batch_index] += (net->Output[k] - expected[k]) * (net->Output[k] - expected[k]);
+		net->Error += (net->Output[k] - expected[k]) * (net->Output[k] - expected[k]);
 	}
 
 	double *dCawHO = calloc(sizeof(double), net->NumOutput);
@@ -403,12 +398,13 @@ void apply_changes(Network *net, double eta, double *gradB){
 	}
 
 	//printf("error: %f ", net->Error[0]);
-	net->Error[0] = 0;
+	net->Error = 0;
 
 }
 
 //function that train the neural network [epoch] times
-void train(Network *net, int epoch, double eta, double **input, double **expected, char *filepath){
+void train(Network *net, int epoch, double eta, int NbTrainingData, double **input, double **expected, char *filepath){
+	net->NbTrainingData = NbTrainingData;
 	for (int x = 0; x < epoch; x++)
 	{
 		//shuffle(input, net->NbTrainingData);
@@ -416,7 +412,7 @@ void train(Network *net, int epoch, double eta, double **input, double **expecte
 		{
 			forward(net, input[y]);
 			double *gradB = backpropB(net, expected[y]);
-			backpropW(net, expected[y], 0);
+			backpropW(net, expected[y]);
 			apply_changes(net, eta, gradB);
 			free(gradB);
 		}
@@ -430,7 +426,7 @@ void train1data(Network *net, int epoch, double eta, double *input, double *expe
 	{
 		forward(net, input);
 		double *gradB = backpropB(net, expected);
-		backpropW(net, expected, 0);
+		backpropW(net, expected);
 		apply_changes(net, eta, gradB);
 		free(gradB);
 	}

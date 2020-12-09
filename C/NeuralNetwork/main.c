@@ -123,15 +123,35 @@ int main(){
     */
 
     //Training sur caractères:
+
+    Network *net = init_nn(900,150,68);
+    
+    double **input = calloc(sizeof(double*), 68);
+    
+    for (int i = 0; i < 68; i++)
+    {
+        input[i] = calloc(sizeof(double), 900);
+        /*
+        for (int j = 0; j < 900 ; i++)
+        {
+            input[i][j] = (double)(rand() % 2);
+        }
+        */
+    }
+    
     double **expected = malloc(sizeof(double*) * 68);
-    for(int i = 0; i < 68, i++){
+    for(int i = 0; i < 68; i++){
         expected[i] = calloc(sizeof(double), 68);
         expected[i][i] = 1.0;
     }
+    
+    train(net, 2, 0.3, 68, input, expected, "nn");
 
     for(int i = 0; i < 68; i++){
-        free(expected[i])
+        free(expected[i]);
+        free(input[i]);
     }
+    free(input);
     free(expected);
 
 }
