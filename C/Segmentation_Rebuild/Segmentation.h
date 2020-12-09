@@ -12,6 +12,6 @@ int Size(int *pProj, int lenList);
 int CountElt(int matrixLen, int Size, int* pProj);
 void ijMatrix(int* pProj, struct Matrix lineOrCharMatrix, int matrixLen, int size);
 void RecreateMatrix(struct Matrix picture, double *ptr, int iMin, int iMax, int jMin, int jMax);
-void ReconstructText(struct Matrix picture);
+void ReconstructText(struct Matrix picture, Network *net);
 
 #endif

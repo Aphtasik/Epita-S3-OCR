@@ -192,7 +192,7 @@ void RecreateMatrix(struct Matrix picture, double *ptr, int iMin, int iMax, int 
 
 
 //The big boi that combine everything. It takes a binarized Matrix and create a file with the text in it.
-void ReconstructText(struct Matrix picture)
+void ReconstructText(struct Matrix picture, Network *net)
 {   
     //### Creation of all the Elements
 
@@ -242,8 +242,6 @@ void ReconstructText(struct Matrix picture)
 
 
     //### Reacreate text in a text file
-    Network *net = init_nn(900, 150, 62, 10, 1);
-
     FILE *fptr;
     fptr = fopen("OCR", "w");
     if (fptr == NULL)
@@ -293,12 +291,4 @@ void ReconstructText(struct Matrix picture)
         }
     }
     fclose(fptr);
-    
-    free(net);
-    free(pProjH);
-    free(picture.pmatrix);
-    free(lineLen);
-    free(linePtr);
-    free(linesMatrix.pmatrix);
-    free(fptr);
 }

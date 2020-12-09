@@ -6,7 +6,7 @@
 
 int main()
 {
-    struct Matrix matrix = CreateMatrix(10, 17);
+    /*struct Matrix matrix = CreateMatrix(10, 17);
     ChangeEltInMatrix(matrix, 2,2,1);
     ChangeEltInMatrix(matrix, 2,3,1);
     ChangeEltInMatrix(matrix, 3,2,1);
@@ -29,9 +29,9 @@ int main()
     ChangeEltInMatrix(matrix, 2,12,1);
     ChangeEltInMatrix(matrix, 3,11,1);
     ChangeEltInMatrix(matrix, 3,12,1);
-    ChangeEltInMatrix(matrix, 4,11,1);
+    ChangeEltInMatrix(matrix, 4,11,1);*/
 
-    /*struct Matrix matrix = CreateMatrix(16, 11);
+    struct Matrix matrix = CreateMatrix(16, 11);
     ChangeEltInMatrix(matrix, 1,2,1);
     ChangeEltInMatrix(matrix, 1,3,1);
     ChangeEltInMatrix(matrix, 2,2,1);
@@ -136,22 +136,28 @@ int main()
     struct Matrix charsMatrix = CreateMatrix(charElt,2);
     ijMatrix(pProjV, charsMatrix, matrix.columns, charSize);
     PrintMatrix(charsMatrix);
-    printf("\n");*/
+    printf("\n");
 
     //TEST reconstruct
-    ReconstructText(matrix);
+    Network *net = init_nn(900, 150, 68);
+    ReconstructText(matrix, net);
+
 
     //TRAINING
-    /*double **expected = malloc(sizeof(double*)*68);
+    /*printf("1");
+    double **expected = malloc(sizeof(double*)*68);
+    printf("2");
     for(int i = 0; i < 68; i++)
     {
         expected[i] = calloc(sizeof(double), 68);
-        expected[i][i] = 1.0;
+        //expected[i][i] = 1.0;
     }
 
-    Network *net = init_nn(900, 150, 68, 10, 68);
+    printf("3");
     double **pAllChar = ReconstructTextTraining(matrix);
-    train(net, 3, 0.3, pAllChar, expected, "TrainingData");
+    printf("4");
+    train(net, 3, 0.3,68, pAllChar, expected, "TrainingData");
+    printf("5");
 
     for(int i = 0; i < 68; i++)
     {

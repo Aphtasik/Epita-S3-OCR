@@ -51,7 +51,6 @@ double ** ReconstructTextTraining(struct Matrix picture)
 
     //### Reacreate text in a text file
     double **pAllChar = malloc(sizeof(double*)*68);
-    Network *net = init_nn(900, 150, 62, 10, 1);
 
     for(int k = 0 ; k < lineElt ; k++)
     {   
@@ -82,11 +81,6 @@ double ** ReconstructTextTraining(struct Matrix picture)
             free(charMat);
         }
     }
-    free(pProjH);
-    free(picture.pmatrix);
-    free(lineLen);
-    free(linePtr);
-    free(linesMatrix.pmatrix);
 
     return pAllChar;
 }
