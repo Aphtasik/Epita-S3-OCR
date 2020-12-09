@@ -5,21 +5,6 @@
 //AUTHOR: Alexandre GAUTIER
 
 
-/*void RemoveLittleNoise(struct Matrix matrix)
-{
-    for(int i = 0; i < matrix.rows ; i++)
-    {
-        for(int j = 0; j < matrix.columns ; j++)
-        {
-            if(MovePointerInMatrix(matrix, i, j) == 1)
-            {
-                //check si il y a un 1 autour, si non, alors on passe cette val a 0
-            }
-        }
-    }
-}*/
-
-
 //Makee an histogram with the number of 1 in each line of the binarized matrix
 void HorizontalProjection(struct Matrix matrix, int* pList)
 {
@@ -149,6 +134,7 @@ int CountElt(int matrixLen, int Size, int* pProj)
 }
 
 
+//make a matrix of size (x,2) with all list corresponding to the framing of the charactere, wether vertical or horizontal
 void ijMatrix(int* pProj, struct Matrix lineOrCharMatrix, int matrixLen, int size)
 {   
     int treshold = MaxBlackPxl(pProj, matrixLen)/2;
@@ -192,6 +178,7 @@ void ijMatrix(int* pProj, struct Matrix lineOrCharMatrix, int matrixLen, int siz
 }
 
 
+//Take a struct Matrix and copy the matrix in the indexes into a pointer 
 void RecreateMatrix(struct Matrix picture, double *ptr, int iMin, int iMax, int jMin, int jMax)
 {
     for(int i = iMin ; i <= iMax; i++)
@@ -204,6 +191,7 @@ void RecreateMatrix(struct Matrix picture, double *ptr, int iMin, int iMax, int 
 }
 
 
+//The big boi that combine everything. It takes a binarized Matrix and create a file with the text in it.
 void ReconstructText(struct Matrix picture)
 {   
     //### Creation of all the Elements
@@ -249,28 +237,8 @@ void ReconstructText(struct Matrix picture)
             //attribution of the values in the pointed adresses
             *(linePtr+i) = charMatrix; 
             *(lineLen+i) = charElt;
-
-            /*printf("POINTER ELEMENTS CHARMAT\n");
-            for(int r = 0; r < charElt;r++)
-            {
-                for(int f = 0; f < 2; f++)
-                {
-                    printf(" %i ", *(charMatrix+r*2+f));
-                }
-                printf("\n");
-            }
-            printf("\n\n");
-
-            printf("POINTER ELEMENTS LINEPTR\n");
-            int *charMatPtr = *(linePtr+i);
-            for(int q = 0; q < charElt*2;q++)
-            {   
-                printf(" %i ", *(charMatPtr+q));
-            }
-            printf("\n\n");*/
         }
     }
-
 
 
     //### Reacreate text in a text file
@@ -302,7 +270,6 @@ void ReconstructText(struct Matrix picture)
 
             for(int l = 0; l < len ; l++)
             {
-                //printf("elt = %i\n", *(charMat+1*2));
                 if (*(charMat+l*2) == (-1))
                 {
                     fprintf(fptr, " ");
@@ -315,12 +282,23 @@ void ReconstructText(struct Matrix picture)
                     double *ptr = calloc(900, sizeof(int));
                     RecreateMatrix(picture, ptr, im, iM, jm, jM);
                     char c = predictchar(net, ptr);
-                    //TODO: passer dans le bail à Mathis, prendre le char et le mettre ds fichier a la place de #
                     fprintf(fptr, "%c", c);
+
                     free(ptr);
                 }
             }
             fprintf(fptr, "\n");
+
+            free(charMat);
         }
     }
+    fclose(fptr);
+    
+    free(net);
+    free(pProjH);
+    free(picture.pmatrix);
+    free(lineLen);
+    free(linePtr);
+    free(linesMatrix.pmatrix);
+    free(fptr);
 }

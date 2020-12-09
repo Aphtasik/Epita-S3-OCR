@@ -1,10 +1,36 @@
 #include<stdio.h>
+#include"Segmentation_Rebuild/trainingSegmentation.h"
 #include"Segmentation_Rebuild/Segmentation.h"
 #include "Tools/Tools.h"
 
 int main()
 {
-    struct Matrix matrix = CreateMatrix(16, 11);
+    struct Matrix matrix = CreateMatrix(10, 17);
+    ChangeEltInMatrix(matrix, 2,2,1);
+    ChangeEltInMatrix(matrix, 2,3,1);
+    ChangeEltInMatrix(matrix, 3,2,1);
+    ChangeEltInMatrix(matrix, 4,2,1);
+    ChangeEltInMatrix(matrix, 4,3,1);
+
+    ChangeEltInMatrix(matrix, 2,5,1);
+    ChangeEltInMatrix(matrix, 2,6,1);
+    ChangeEltInMatrix(matrix, 3,5,1);
+    ChangeEltInMatrix(matrix, 3,6,1);
+    ChangeEltInMatrix(matrix, 4,6,1);
+
+    ChangeEltInMatrix(matrix, 2,9,1);
+    ChangeEltInMatrix(matrix, 3,8,1);
+    ChangeEltInMatrix(matrix, 3,9,1);
+    ChangeEltInMatrix(matrix, 4,8,1);
+    ChangeEltInMatrix(matrix, 4,9,1);
+
+    ChangeEltInMatrix(matrix, 2,11,1);
+    ChangeEltInMatrix(matrix, 2,12,1);
+    ChangeEltInMatrix(matrix, 3,11,1);
+    ChangeEltInMatrix(matrix, 3,12,1);
+    ChangeEltInMatrix(matrix, 4,11,1);
+
+    /*struct Matrix matrix = CreateMatrix(16, 11);
     ChangeEltInMatrix(matrix, 1,2,1);
     ChangeEltInMatrix(matrix, 1,3,1);
     ChangeEltInMatrix(matrix, 2,2,1);
@@ -33,7 +59,7 @@ int main()
     ChangeEltInMatrix(matrix, 12,7,1);
     ChangeEltInMatrix(matrix, 12,8,1);
     ChangeEltInMatrix(matrix, 13,7,1);
-    ChangeEltInMatrix(matrix, 13,8,1);
+    ChangeEltInMatrix(matrix, 13,8,1);*/
 
     PrintMatrix(matrix);
     printf("\n");
@@ -113,4 +139,16 @@ int main()
 
     //TEST reconstruct
     ReconstructText(matrix);
+
+    //TRAINING
+    FILE *fptr;
+    if (fptr == NULL)
+    {
+        printf("Error!");
+        exit(1);
+    }
+    fptr = fopen("TrainingData", "w");
+    fclose(fptr);
+    
+
 }
