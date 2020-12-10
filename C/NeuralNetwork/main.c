@@ -2,11 +2,13 @@
 #include <stdlib.h>
 #include "neural_network.h"
 
+/*
 void print_nn(Network *net){
 
     printf("\n\nWeightIH: \n");
     for (int i = 0; i < net->NumInput; i++)
     {
+        printf("%i", i);
         for (int j = 0; j < net->NumHidden; j++)
         {
             printf("%f ", net->WeightIH[i][j]);
@@ -48,7 +50,7 @@ void print_nn(Network *net){
     }
     printf("\n");
 }
-
+*/
 int main(){
 
    // fonction xor 
@@ -144,10 +146,10 @@ int main(){
         expected[i] = calloc(sizeof(double), 68);
         expected[i][i] = 1.0;
     }
-    train(net, 2, 0.3, 68, input, expected, "nn");
+    print_nn(net);
+    train(net, 2, 0.3, 68, input, expected, "nn", 1);
     //predictchar(net, input[0]);
     //print_nn(net);
-    
     //free_nn(net, "nn");
     for(int i = 0; i < 68; i++){
         free(expected[i]);

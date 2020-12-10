@@ -141,6 +141,55 @@ Network *load_nn(char* filepath){
 	return net;
 }
 
+void print_nn(Network *net){
+
+    printf("\n\nWeightIH: \n");
+    for (int i = 0; i < net->NumInput; i++)
+    {
+        printf("%i", i);
+        for (int j = 0; j < net->NumHidden; j++)
+        {
+            printf("%f ", net->WeightIH[i][j]);
+        }
+        printf("\n");
+    }
+    printf("\n\nBiasH:\n");
+
+    for (int j = 0; j < net->NumHidden; j++)
+    {
+        printf("%f ", net->BiasH[j]);
+    }
+    printf("\n\nWeightHO:\n");
+    for (int j = 0; j < net->NumHidden; j++)
+    {
+        for (int k = 0; k < net->NumOutput; k++)
+        {
+            printf("%f ", net->WeightHO[j][k]);
+        }
+        printf("\n");
+    }
+    printf("\n\nBiasO:\n");
+    for (int k = 0; k < net->NumOutput; k++)
+    {
+        printf("%f ", net->BiasO[k]);
+    }
+    printf("\n\nZ1 A1:\n");
+
+    for (int i = 0; i < net->NumHidden; i++)
+    {
+        printf("%f ", net->Z1[i]);
+        printf("%f ", net->A1[i]);
+    }
+    printf("\n\nZ2 Output:\n");
+    for (int i = 0; i < net->NumOutput; i++)
+    {
+        printf("%f ", net->Z2[i]);
+        printf("%f ", net->Output[i]);
+    }
+    printf("\n");
+}
+
+
 // initialize a neural network
 Network *init_nn(int nbI, int nbH, int nbO){
 
@@ -390,7 +439,7 @@ void apply_changes(Network *net, double eta, double *gradB){
 }
 
 //function that train the neural network [epoch] times
-void train(Network *net, int epoch, double eta, int nbtrainingdata, double **input, double **expected, char *filepath){
+void train(Network *net, int epoch, double eta, int nbtrainingdata, double **input, double **expected,char *filepath, int print){
 	net->NbTrainingData = nbtrainingdata;
 	for (int x = 0; x < epoch; x++)
 	{
@@ -402,6 +451,10 @@ void train(Network *net, int epoch, double eta, int nbtrainingdata, double **inp
 			apply_changes(net, eta, gradB);
 			free(gradB);
 		}
+	}
+	if (print)
+	{
+		print_nn(net);
 	}
 	save_nn(net, filepath);
 }
@@ -431,3 +484,4 @@ char predictchar(Network *net, double *input){
 	}
 	return alphabet[ires];
 }
+
