@@ -133,12 +133,12 @@ int main(){
     for (int i = 0; i < 68; i++)
     {
         input[i] = calloc(sizeof(double), 900);
-        /*
-        for (int j = 0; j < 900 ; i++)
+        printf("%i ",i);
+        for (int j = 0; j < 900 ; j++)
         {
             input[i][j] = (double)(rand() % 2);
         }
-        */
+
     }
     
     double **expected = malloc(sizeof(double*) * 68);
@@ -146,7 +146,7 @@ int main(){
         expected[i] = calloc(sizeof(double), 68);
         expected[i][i] = 1.0;
     }
-    print_nn(net);
+    //print_nn(net);
     train(net, 2, 0.3, 68, input, expected, "nn", 1);
     //predictchar(net, input[0]);
     //print_nn(net);

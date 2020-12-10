@@ -443,14 +443,12 @@ void train(Network *net, int epoch, double eta, int nbtrainingdata, double **inp
 	net->NbTrainingData = nbtrainingdata;
 	for (int x = 0; x < epoch; x++)
 	{
-		for (int y = 0; y < net->NbTrainingData; y++)
-		{
-			forward(net, input[y]);
-			double *gradB = backpropB(net, expected[y]);
-			backpropW(net, expected[y]);
-			apply_changes(net, eta, gradB);
-			free(gradB);
-		}
+		int y = rand()%net->NbTrainingData;
+		forward(net, input[y]);
+		double *gradB = backpropB(net, expected[y]);
+		backpropW(net, expected[y]);
+		apply_changes(net, eta, gradB);
+		free(gradB);
 	}
 	if (print)
 	{
