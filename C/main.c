@@ -22,7 +22,7 @@ int main()
         expected[i][i] = 1.0;
     }
 
-    double **pAllChar = ReconstructTextTraining(matrix);
+    //double **pAllChar = ReconstructTextTraining(matrix);
     //train(net, 3, 0.3,68, pAllChar, expected, "TrainingData", 1);
 
     for(int i = 0; i < 68; i++)
