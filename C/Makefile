@@ -18,7 +18,7 @@ Segmentation.o: Segmentation_Rebuild/Segmentation.c Segmentation_Rebuild/Segment
 Tools.o: Tools/Tools.c
 	$(CC) -c $< $(CFLAGS)
 
-pixel_operations.o: PreProcess/pixel_operations.c PreProcess/pixel_operations.h
+pixel_operations.o: PreProcess/pixel_operations.c PreProcess/pixel_operations.h Tools/Tools.h
 	$(CC) -c $< $(CFLAGS) $(LDLIBS)
 
 grayscale.o: PreProcess/grayscale.c PreProcess/pixel_operations.h
