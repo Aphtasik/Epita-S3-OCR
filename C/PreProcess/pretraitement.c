@@ -760,6 +760,7 @@ SDL_Surface* filtre2(SDL_Surface *image)
     return res;
 }
 
+
 int main()
 {
   SDL_Surface* image_surface;

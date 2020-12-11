@@ -5,10 +5,11 @@
 #include"NeuralNetwork/neural_network.h"
 //#include"PreProcess/Rotate.h"
 //#include"PreProcess/grayscale.h"
+#include "PreProcess/pixel_operations.h"
 
 int main()
 {
-    struct Matrix matrix; //TODO: DONNER L'IMAGE
+    //struct Matrix matrix = SurfaceToMatrix() //TODO: DONNER L'IMAGE
     Network *net = init_nn(900, 150, 68);
     //TEST reconstruct
     //ReconstructText(matrix, net);

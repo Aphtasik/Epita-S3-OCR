@@ -4,6 +4,7 @@
 
 #include <err.h>
 #include "pixel_operations.h"
+#include "../Tools/Tools.h"
 
 static inline
 Uint8* pixel_ref(SDL_Surface *surf, unsigned x, unsigned y)
@@ -78,4 +79,29 @@ void update_surface(SDL_Surface* screen, SDL_Surface* image)
         warnx("BlitSurface error: %s\n", SDL_GetError());
 
     SDL_UpdateRect(screen, 0, 0, image->w, image->h);
+}
+
+
+struct Matrix SurfaceToMatrix(SDL_Surface *image)
+{
+	int height = image->h;
+	int width = image->w;
+
+    struct Matrix matrix = CreateMatrix(height, width);
+
+    for(int i = 0; i < width ; i++)
+    {
+        for(int j = 0 ; j < height ; j++)
+        {
+            Uint32 pixel = get_pixel(image, i, j);
+            Uint8 r,g,b;
+            SDL_GetRGB(pixel, image->format, &r,&g,&b);
+
+            if(g == 0)
+            {
+                ChangeEltInMatrix(matrix, j, i, 1);
+            }
+        }
+    }
+    return matrix;
 }

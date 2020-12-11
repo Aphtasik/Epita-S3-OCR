@@ -15,7 +15,7 @@ struct Matrix CreateMatrix(int rows, int columns)
     matrix.columns = columns;
 
     //TODO: Peut être passer en calloc
-    matrix.pmatrix = malloc(sizeof(double)*columns*rows);
+    matrix.pmatrix = calloc(sizeof(double), columns*rows);
 
     return matrix;
 }
