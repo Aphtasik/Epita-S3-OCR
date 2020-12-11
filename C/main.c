@@ -3,9 +3,9 @@
 #include"Segmentation_Rebuild/Segmentation.h"
 #include"Tools/Tools.h"
 #include"NeuralNetwork/neural_network.h"
-//#include"PreProcess/Rotate.h"
-//#include"PreProcess/grayscale.h"
 #include "PreProcess/pixel_operations.h"
+#include "PreProcess/pretraitement.h"
+//#include"PreProcess/Rotate.h"
 
 int main()
 {
@@ -23,11 +23,13 @@ int main()
     }
 
     double **pAllChar = ReconstructTextTraining(matrix);
-    train(net, 3, 0.3,68, pAllChar, expected, "TrainingData", 1);
+    //train(net, 3, 0.3,68, pAllChar, expected, "TrainingData", 1);
 
     for(int i = 0; i < 68; i++)
     {
         free(expected[i]);
     }
     free(expected);
+
+    printf("fin");
 }
