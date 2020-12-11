@@ -17,6 +17,12 @@ Segmentation.o: Segmentation_Rebuild/Segmentation.c Segmentation_Rebuild/Segment
 Tools.o: Tools/Tools.c
 	$(CC) -c $< $(CFLAGS)
 
+pixel_operations.o: PreProcess/pixel_operations.c PreProcess/pixel_operations.h
+	$(CC) -c $< $(CFLAGS) -ISDL2 -ISDL2_image
+
+grayscale.o: PreProcess/grayscale.c PreProcess/pixel_operations.h
+	$(CC) -c $< $(CFLAGS) -ISDL2 -ISDL2_image
+
 clean:
 	rm -rf *.o
 
