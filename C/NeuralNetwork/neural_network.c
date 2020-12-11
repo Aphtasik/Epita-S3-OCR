@@ -146,7 +146,6 @@ void print_nn(Network *net){
     printf("\n\nWeightIH: \n");
     for (int i = 0; i < net->NumInput; i++)
     {
-        printf("%i", i);
         for (int j = 0; j < net->NumHidden; j++)
         {
             printf("%f ", net->WeightIH[i][j]);
@@ -438,6 +437,19 @@ void apply_changes(Network *net, double eta, double *gradB){
 
 }
 
+double *softmax(double *values, int NumOutput){
+	double *output = calloc(sizeof(double),NumOutput);
+	double sum = 0;
+	for (int l = 0; l < NumOutput; l++){
+		sum += exp(values[l]);
+	}
+	for (int k = 0; k < NumOutput; k++)
+	{
+		output[k] = (exp(values[k])/sum);
+	}
+	return output;	
+}
+
 //function that train the neural network [epoch] times
 void train(Network *net, int epoch, double eta, int nbtrainingdata, double **input, double **expected,char *filepath, int print){
 	net->NbTrainingData = nbtrainingdata;
@@ -474,12 +486,14 @@ char predictchar(Network *net, double *input){
 	char alphabet[68] = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!.?:()";
 	forward(net, input);
 	int ires = 0;
+	double *res = softmax(net->Output, net->NumOutput);
 	for (int k = 0; k < net->NumOutput; k++)
 	{
-		if(net->Output[k] >= 0.5){
+		if(res[k] >= 0.5){
 			ires = k;
 		}
 	}
+	free(res);
 	return alphabet[ires];
 }
 

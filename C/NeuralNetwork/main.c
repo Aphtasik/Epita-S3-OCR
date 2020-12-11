@@ -133,7 +133,6 @@ int main(){
     for (int i = 0; i < 68; i++)
     {
         input[i] = calloc(sizeof(double), 900);
-        printf("%i ",i);
         for (int j = 0; j < 900 ; j++)
         {
             input[i][j] = (double)(rand() % 2);
@@ -147,10 +146,11 @@ int main(){
         expected[i][i] = 1.0;
     }
     //print_nn(net);
-    train(net, 2, 0.3, 68, input, expected, "nn", 1);
-    //predictchar(net, input[0]);
+    //train(net, 2, 0.3, 68, input, expected, "nn", 1);
+    char x = predictchar(net, input[0]);
+    printf("%c\n", x);
     //print_nn(net);
-    //free_nn(net, "nn");
+    free_nn(net, "nn");
     for(int i = 0; i < 68; i++){
         free(expected[i]);
         free(input[i]);
