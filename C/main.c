@@ -6,6 +6,17 @@
 
 int main()
 {
+    struct Matrix matrix = CreateMatrix(4, 7);
+    ChangeEltInMatrix(matrix, 1,1,1);
+    ChangeEltInMatrix(matrix, 1,2,1);
+    ChangeEltInMatrix(matrix, 2,1,1);
+    ChangeEltInMatrix(matrix, 2,2,1);
+
+    ChangeEltInMatrix(matrix, 1,4,1);
+    ChangeEltInMatrix(matrix, 1,5,1);
+    ChangeEltInMatrix(matrix, 2,4,1);
+    ChangeEltInMatrix(matrix, 2,5,1);
+
     /*struct Matrix matrix = CreateMatrix(10, 17);
     ChangeEltInMatrix(matrix, 2,2,1);
     ChangeEltInMatrix(matrix, 2,3,1);
@@ -29,7 +40,7 @@ int main()
     ChangeEltInMatrix(matrix, 2,12,1);
     ChangeEltInMatrix(matrix, 3,11,1);
     ChangeEltInMatrix(matrix, 3,12,1);
-    ChangeEltInMatrix(matrix, 4,11,1);*/
+    ChangeEltInMatrix(matrix, 4,11,1);
 
     struct Matrix matrix = CreateMatrix(16, 11);
     ChangeEltInMatrix(matrix, 1,2,1);
@@ -60,12 +71,12 @@ int main()
     ChangeEltInMatrix(matrix, 12,7,1);
     ChangeEltInMatrix(matrix, 12,8,1);
     ChangeEltInMatrix(matrix, 13,7,1);
-    ChangeEltInMatrix(matrix, 13,8,1);
+    ChangeEltInMatrix(matrix, 13,8,1);*/
 
     PrintMatrix(matrix);
     printf("\n");
 
-    int *pProjH = malloc(sizeof(int)*matrix.rows);
+    /*int *pProjH = malloc(sizeof(int)*matrix.rows);
     int *pProjV = malloc(sizeof(int)*matrix.columns);
 
 
@@ -136,32 +147,26 @@ int main()
     struct Matrix charsMatrix = CreateMatrix(charElt,2);
     ijMatrix(pProjV, charsMatrix, matrix.columns, charSize);
     PrintMatrix(charsMatrix);
-    printf("\n");
+    printf("\n");*/
 
-    //TEST reconstruct
     Network *net = init_nn(900, 150, 68);
-    ReconstructText(matrix, net);
-
+    //TEST reconstruct
+    //ReconstructText(matrix, net);
 
     //TRAINING
-    /*printf("1");
     double **expected = malloc(sizeof(double*)*68);
-    printf("2");
     for(int i = 0; i < 68; i++)
     {
         expected[i] = calloc(sizeof(double), 68);
-        //expected[i][i] = 1.0;
+        expected[i][i] = 1.0;
     }
 
-    printf("3");
     double **pAllChar = ReconstructTextTraining(matrix);
-    printf("4");
-    train(net, 3, 0.3,68, pAllChar, expected, "TrainingData");
-    printf("5");
+    train(net, 3, 0.3,68, pAllChar, expected, "TrainingData", 1);
 
     for(int i = 0; i < 68; i++)
     {
         free(expected[i]);
     }
-    free(expected);*/
+    free(expected);
 }

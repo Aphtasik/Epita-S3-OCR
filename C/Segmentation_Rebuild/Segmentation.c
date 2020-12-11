@@ -180,11 +180,11 @@ void ijMatrix(int* pProj, struct Matrix lineOrCharMatrix, int matrixLen, int siz
 //Take a struct Matrix and copy the matrix in the indexes into a pointer 
 void RecreateMatrix(struct Matrix picture, double *ptr, int iMin, int iMax, int jMin, int jMax)
 {
-    for(int i = iMin ; i <= iMax; i++)
+    for(int i = 0 ; i <= iMax-iMin; i++)
     {
-        for(int j = jMin; j <= jMax; j++)
+        for(int j = 0; j <= jMax-jMin; j++)
         {
-            *(ptr+i*(jMax-jMin+1)+j) = MovePointerInMatrix(picture, i, j);
+            *(ptr+i*30+j) = MovePointerInMatrix(picture, iMin+i, jMin+j);
         }
     }
 }
@@ -276,12 +276,10 @@ void ReconstructText(struct Matrix picture, Network *net)
                     int jm = *(charMat+l*2);
                     int jM = *(charMat+l*2+1);
 
-                    double *ptr = calloc(900, sizeof(int));
+                    double *ptr = calloc(sizeof(int), 900);
                     RecreateMatrix(picture, ptr, im, iM, jm, jM);
                     char c = predictchar(net, ptr);
                     fprintf(fptr, "%c", c);
-
-                    free(ptr);
                 }
             }
             fprintf(fptr, "\n");
