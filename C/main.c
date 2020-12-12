@@ -3,17 +3,30 @@
 #include"Segmentation_Rebuild/Segmentation.h"
 #include"Tools/Tools.h"
 #include"NeuralNetwork/neural_network.h"
-#include "PreProcess/pixel_operations.h"
 #include "PreProcess/pretraitement.h"
 //#include"PreProcess/Rotate.h"
 
 int main()
 {
-    //struct Matrix matrix = SurfaceToMatrix() //TODO: DONNER L'IMAGE
-    Network *net = init_nn(900, 150, 68);
-    //TEST reconstruct
-    //ReconstructText(matrix, net);
+    SDL_Surface *image = load_image("../TestPics/training_01.jpg");
+    grayscale(image);
+    blackAndWhite(image);
+    struct Matrix matrix = SurfaceToMatrix(image);
+    double **pAllChar = ReconstructTextTraining(matrix);
 
+    double **input = calloc(sizeof(double*), 68);
+    for(int i = 0; i < 68; i++)
+    {
+        input[i] = calloc(sizeof(double), 900);
+        for(int j = 0; j < 900; j++)
+        {
+            input[i][j] = (double)(rand()%2);
+        }
+        
+    }
+
+    //Network *net = init_nn(900, 150, 68);
+    Network *net = load_nn("TrainingData");
     //TRAINING
     double **expected = malloc(sizeof(double*)*68);
     for(int i = 0; i < 68; i++)
@@ -22,8 +35,8 @@ int main()
         expected[i][i] = 1.0;
     }
 
-    //double **pAllChar = ReconstructTextTraining(matrix);
-    //train(net, 3, 0.3,68, pAllChar, expected, "TrainingData", 1);
+    
+    train(net, 1000, 0.3,68, input, expected, "TrainingData", 1);
 
     for(int i = 0; i < 68; i++)
     {
@@ -31,5 +44,7 @@ int main()
     }
     free(expected);
 
-    printf("fin");
+
+    //TEST reconstruct
+    //ReconstructText(matrix, net);
 }

@@ -26,6 +26,7 @@ pretraitement.o: PreProcess/pretraitement.c PreProcess/pixel_operations.h
 
 clean:
 	rm -rf *.o
+	rm -rf *.d
 
 mrpropre: clean
 	rm -rf $(EXEC)

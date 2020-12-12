@@ -12,10 +12,12 @@
 Uint32 get_pixel(SDL_Surface *surface, unsigned x, unsigned y);
 void put_pixel(SDL_Surface *surface, unsigned x, unsigned y, Uint32 pixel);
 void update_surface(SDL_Surface* screen, SDL_Surface* image);
+SDL_Surface* load_image(char *path);
 void grayscale(SDL_Surface* surface);
 void histo1(SDL_Surface *surface, int L[], int width, int height);
 int otsu_threshold(SDL_Surface *surface, int width, int height);
 void blackAndWhite(SDL_Surface *surface);
 SDL_Surface* filtre(SDL_Surface *surface);
+struct Matrix SurfaceToMatrix(SDL_Surface *image);
 
 #endif

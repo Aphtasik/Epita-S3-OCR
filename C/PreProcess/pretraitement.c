@@ -5,6 +5,7 @@
 #include <stdlib.h>
 //#include <SDL.h>
 #include "pixel_operations.h"
+#include "../Tools/Tools.h"
 
 Uint8* pixel_ref(SDL_Surface *surf, unsigned x, unsigned y)
 {
@@ -72,6 +73,7 @@ void put_pixel(SDL_Surface *surface, unsigned x, unsigned y, Uint32 pixel)
     }
 }
 
+
 void update_surface(SDL_Surface* screen, SDL_Surface* image)
 {
     if (SDL_BlitSurface(image, NULL, screen, NULL) < 0)
@@ -87,6 +89,32 @@ void init_sdl()
     if(SDL_Init(SDL_INIT_VIDEO) == -1)
         errx(1,"Could not initialize SDL: %s.\n", SDL_GetError());
 }
+
+
+struct Matrix SurfaceToMatrix(SDL_Surface *image)
+{
+	int height = image->h;
+	int width = image->w;
+
+    struct Matrix matrix = CreateMatrix(height, width);
+
+    for(int i = 0; i < width ; i++)
+    {
+        for(int j = 0 ; j < height ; j++)
+        {
+            Uint32 pixel = get_pixel(image, i, j);
+            Uint8 r,g,b;
+            SDL_GetRGB(pixel, image->format, &r,&g,&b);
+
+            if(g == 0)
+            {
+                ChangeEltInMatrix(matrix, j, i, 1);
+            }
+        }
+    }
+    return matrix;
+}
+
 
 SDL_Surface* load_image(char *path)
 {
@@ -833,6 +861,8 @@ SDL_Surface* filtre2(SDL_Surface *image)
 
     return res;
 }
+
+
 
 /*
 int main()
