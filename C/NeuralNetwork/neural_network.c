@@ -494,6 +494,7 @@ char predictchar(Network *net, double *input){
 		}
 	}
 	free(res);
+	free_nn(net);
 	return alphabet[ires];
 }
 

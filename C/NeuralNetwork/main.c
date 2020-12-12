@@ -150,7 +150,7 @@ int main(){
     char x = predictchar(net, input[0]);
     printf("%c\n", x);
     //print_nn(net);
-    free_nn(net, "nn");
+    //free_nn(net, "nn");
     for(int i = 0; i < 68; i++){
         free(expected[i]);
         free(input[i]);
