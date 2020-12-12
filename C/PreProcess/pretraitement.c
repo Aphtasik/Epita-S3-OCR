@@ -834,7 +834,7 @@ SDL_Surface* filtre2(SDL_Surface *image)
     return res;
 }
 
-
+/*
 int main()
 {
   SDL_Surface* image_surface;
@@ -866,4 +866,4 @@ int main()
   SDL_FreeSurface(image_surface2);
   SDL_FreeSurface(screen_surface);
 }
-
+*/
