@@ -27,7 +27,7 @@ int main()
     Network *net = init_nn(900, 150, 68);
     printf("\n\n");*/
 
-    SDL_Surface *image = load_image("test2.jpg");
+    SDL_Surface *image = load_image("../TestPics/training_01.jpg");
     grayscale(image);
     blackAndWhite(image);
     struct Matrix matrix = SurfaceToMatrix(image);

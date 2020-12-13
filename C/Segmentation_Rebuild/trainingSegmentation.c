@@ -49,7 +49,7 @@ double ** ReconstructTextTraining(struct Matrix picture)
 
 
     //### Reacreate text in a text file
-    double **pAllChar = calloc(sizeof(double*), 67);
+    double **pAllChar = calloc(sizeof(double*), 62);
 
     for(int k = 0 ; k < lineElt ; k++)
     {   
@@ -61,7 +61,7 @@ double ** ReconstructTextTraining(struct Matrix picture)
             int *charMat = *(linePtr+k);
 
 
-            for(int l = 0; l < 68 ; l++)
+            for(int l = 0; l < 62 ; l++)
             {
                 if (*(charMat+l*2) != (-1))
                 {
