@@ -351,7 +351,7 @@ void trainNetFinal(Network *net){
 */
 
 
-char PredictChar(Network *net, double **input){
+char PredictChar(Network *net, double *input){
 for (int l = 0; l < net->Numpattern; l++)
 	{
 		free(net->SumH[l]);
@@ -365,16 +365,19 @@ for (int l = 0; l < net->Numpattern; l++)
 	free(net->Output);
 	free(net->Hidden);
 
+	double **Input = malloc(sizeof(double *));
+	Input[0] = input;
 	double **target = malloc(sizeof(double *));
 	target[0] = calloc(sizeof(double), net->NumOutput);
 	net->Numpattern = 1;
-	trainNetwork(net, 1, 0.01, 0.9, input, target);
+	trainNetwork(net, 1, 0.01, 0.9, Input, target);
 	printList(net->Output[0], net->NumOutput);
 	free(target[0]);
 	free(target);
+	free(Input);
 
 	int ires = getPos(net);
-	char *alphabet[62] = {"0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"};
+	char alphabet[62] = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 	return alphabet[ires]; 
 }
 

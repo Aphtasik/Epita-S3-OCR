@@ -36,7 +36,7 @@ struct Network{
 
 Network *initNet(size_t nbi, size_t nbh, size_t nbo);
 
-char PredictChar(Network *net, double **input);
+char PredictChar(Network *net, double *input);
 
 void trainNetFinal(Network *net);
 
