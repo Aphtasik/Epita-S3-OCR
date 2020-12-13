@@ -124,8 +124,8 @@ void saveNr(Network *net, char *filePath){
 			fprintf(nr,"%f\n", net->WeightLH[i][j]);
 		}
 	}
-	for(int i = 0; i < net->NumOutput +1 ; i++){
-		for(int j = 0; j < net->NumHidden ;j++){
+	for(int i = 0; i < net->NumOutput; i++){
+		for(int j = 0; j < net->NumHidden+1;j++){
 			fprintf(nr,"%f\n", net->deltaWeightHO[j][i]);
 			fprintf(nr,"%f\n", net->WeightHO[j][i]);
 		}
