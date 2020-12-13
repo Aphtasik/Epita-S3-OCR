@@ -4,6 +4,7 @@
 double ** ReconstructTextTraining(struct Matrix picture)
 {   
     //### Creation of all the Elements
+
     //Line Segmentation
     int *pProjH = malloc(sizeof(int)*picture.rows);
     HorizontalProjection(picture, pProjH);
@@ -15,7 +16,7 @@ double ** ReconstructTextTraining(struct Matrix picture)
     ijMatrix(pProjH, linesMatrix, picture.rows, lineSize);
 
     //Pointers that will help to iterate and get elements from characters matrixes
-    int **linePtr = malloc(sizeof(int)*lineElt);
+    int **linePtr = malloc(sizeof(double)*lineElt);
     int *lineLen = malloc(sizeof(int)*lineElt);
 
     //Char Segmentation for each line
@@ -44,26 +45,34 @@ double ** ReconstructTextTraining(struct Matrix picture)
 
             //attribution of the values in the pointed adresses
             *(linePtr+i) = charMatrix; 
+            *(lineLen+i) = charElt;
         }
     }
 
 
     //### Reacreate text in a text file
     double **pAllChar = calloc(sizeof(double*), 62);
-
     for(int k = 0 ; k < lineElt ; k++)
     {   
-        if (MovePointerInMatrix(linesMatrix, k, 0) != (-1))
+        if (MovePointerInMatrix(linesMatrix, k, 0) == (-1))
+        {
+            continue;
+        }
+        else
         {
             int im = MovePointerInMatrix(linesMatrix, k, 0);
             int iM = MovePointerInMatrix(linesMatrix, k, 1);
 
             int *charMat = *(linePtr+k);
 
-
-            for(int l = 0; l < 62 ; l++)
+            int len = *(lineLen+k); //nb of char in the line 
+            for(int l = 0; l < len ; l++)
             {
-                if (*(charMat+l*2) != (-1))
+                if (*(charMat+l*2) == (-1))
+                {
+                    continue;
+                }
+                else
                 {
                     int jm = *(charMat+l*2);
                     int jM = *(charMat+l*2+1);

@@ -43,7 +43,7 @@ int main()
         expected[i][i] = 1.0;
     }
 
-    trainNetwork(net, 200, 0.3, 0.9, pAllChar, expected, 62);
+    //trainNetwork(net, 10, 0.3, 0.9, pAllChar, expected, 62);
     //saveNr(net, "TrainingData");
 
     for(int i = 0; i < 68; i++)
