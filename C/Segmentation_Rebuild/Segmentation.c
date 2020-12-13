@@ -68,25 +68,24 @@ int MaxBlackPxl(int* pProj, int matrixLen)
 //Return the size of the first line of texte of the matrix
 int Size(int *pProj, int lenList)
 {
-    int treshold = MaxBlackPxl(pProj, lenList)/2;
+    int treshold = 1;
     int res = 0;
     int isFound = 0;
     int onSpree = 0;
     int i = 0;
-    int *p = pProj;
 
     while(i < lenList && isFound == 0)
     {
-        if(onSpree == 0 && *(p+i) > treshold)
+        if(onSpree == 0 && *(pProj+i) > treshold)
         {
             onSpree = 1;
             res++;
         }
-        else if (onSpree == 1 && *(p+i) > treshold)
+        else if (onSpree == 1 && *(pProj+i) > treshold)
         {   
             res++;
         }
-        else if (onSpree == 1 && *(p+i) < treshold)
+        else if (onSpree == 1 && *(pProj+i) < treshold)
         {
             isFound = 1;
         }
@@ -101,15 +100,14 @@ int Size(int *pProj, int lenList)
 //We consider a jump to new paragraph when nb of 0 lines > (size of a line) *3
 int CountElt(int matrixLen, int Size, int* pProj)
 {
-    int treshold = MaxBlackPxl(pProj, matrixLen)/2;
+    int treshold = 1;
     int onSpree = 0;
     int sum = 0;
     int nbVoid = 0;
-    int *p = pProj;
 
     for(int i = 0 ; i < matrixLen ; i++)
     {
-        if(onSpree == 0 && *(p+i) > treshold)
+        if(onSpree == 0 && *(pProj+i) > treshold)
         {
             onSpree = 1;
             if(nbVoid >= Size*2)
@@ -118,13 +116,13 @@ int CountElt(int matrixLen, int Size, int* pProj)
             }
             nbVoid = 0;
         }
-        else if (onSpree == 1 && *(p+i) < treshold)
+        else if (onSpree == 1 && *(pProj+i) < treshold)
         {
             sum++;
             nbVoid++;
             onSpree = 0;
         }
-        else if (onSpree == 0 && *(p+i) < treshold) 
+        else if (onSpree == 0 && *(pProj+i) < treshold) 
         {
             nbVoid++;
         }
@@ -137,17 +135,15 @@ int CountElt(int matrixLen, int Size, int* pProj)
 //make a matrix of size (x,2) with all list corresponding to the framing of the charactere, wether vertical or horizontal
 void ijMatrix(int* pProj, struct Matrix lineOrCharMatrix, int matrixLen, int size)
 {   
-    int treshold = MaxBlackPxl(pProj, matrixLen)/2;
+    int treshold = 1;
     int onSpree = 0;
     int nbVoid = 0;
     int indexIList = 0;
 
-    int *p = pProj;
-
 
     for(int i = 0 ; i < matrixLen ; i++)
     {
-        if(onSpree == 0 && *(p+i) > treshold)
+        if(onSpree == 0 && *(pProj+i) > treshold)
         {
             onSpree = 1;
             if(nbVoid >= size*2)
@@ -161,7 +157,7 @@ void ijMatrix(int* pProj, struct Matrix lineOrCharMatrix, int matrixLen, int siz
 
             ChangeEltInMatrix(lineOrCharMatrix, indexIList, 0, i);
         }
-        else if (onSpree == 1 && *(p+i) < treshold)
+        else if (onSpree == 1 && *(pProj+i) < treshold)
         {
             ChangeEltInMatrix(lineOrCharMatrix, indexIList, 1, i-1);
             onSpree = 0;
@@ -169,7 +165,7 @@ void ijMatrix(int* pProj, struct Matrix lineOrCharMatrix, int matrixLen, int siz
             indexIList++;
 
         }
-        else if (onSpree == 0 && *(p+i) < treshold) 
+        else if (onSpree == 0 && *(pProj+i) < treshold) 
         {
             nbVoid++;
         }
@@ -184,7 +180,7 @@ void RecreateMatrix(struct Matrix picture, double *ptr, int iMin, int iMax, int 
     {
         for(int j = 0; j <= jMax-jMin; j++)
         {
-            *(ptr+i*30+j) = MovePointerInMatrix(picture, iMin+i, jMin+j);
+            *(ptr+i*50+j) = MovePointerInMatrix(picture, iMin+i, jMin+j);
         }
     }
 }
@@ -206,7 +202,7 @@ void ReconstructText(struct Matrix picture, Network *net)
     ijMatrix(pProjH, linesMatrix, picture.rows, lineSize);
 
     //Pointers that will help to iterate and get elements from characters matrixes
-    int **linePtr = malloc(sizeof(int)*lineElt);
+    int **linePtr = malloc(sizeof(double)*lineElt);
     int *lineLen = malloc(sizeof(int)*lineElt);
 
     //Char Segmentation for each line
@@ -264,7 +260,6 @@ void ReconstructText(struct Matrix picture, Network *net)
             int *charMat = *(linePtr+k);
 
             int len = *(lineLen+k); //nb of char in the line 
-
             for(int l = 0; l < len ; l++)
             {
                 if (*(charMat+l*2) == (-1))
@@ -276,15 +271,14 @@ void ReconstructText(struct Matrix picture, Network *net)
                     int jm = *(charMat+l*2);
                     int jM = *(charMat+l*2+1);
 
-                    double *ptr = calloc(sizeof(int), 900);
+                    double *ptr = calloc(sizeof(double), 2500);
                     RecreateMatrix(picture, ptr, im, iM, jm, jM);
-                    char c = predictchar(net, ptr);
+                    char c = '#'; //predictchar(net, ptr);
                     fprintf(fptr, "%c", c);
+                    free(ptr);
                 }
             }
             fprintf(fptr, "\n");
-
-            free(charMat);
         }
     }
     fclose(fptr);

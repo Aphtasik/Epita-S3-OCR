@@ -44,13 +44,12 @@ double ** ReconstructTextTraining(struct Matrix picture)
 
             //attribution of the values in the pointed adresses
             *(linePtr+i) = charMatrix; 
-            *(lineLen+i) = charElt;
         }
     }
 
 
     //### Reacreate text in a text file
-    double **pAllChar = calloc(sizeof(double*), 68);
+    double **pAllChar = calloc(sizeof(double*), 67);
 
     for(int k = 0 ; k < lineElt ; k++)
     {   
@@ -62,15 +61,14 @@ double ** ReconstructTextTraining(struct Matrix picture)
             int *charMat = *(linePtr+k);
 
 
-            int len = *(lineLen+k); //nb of char in the line 
-            for(int l = 0; l < len ; l++)
+            for(int l = 0; l < 68 ; l++)
             {
                 if (*(charMat+l*2) != (-1))
                 {
                     int jm = *(charMat+l*2);
                     int jM = *(charMat+l*2+1);
 
-                    double *ptr = calloc(sizeof(double), 900);
+                    double *ptr = calloc(sizeof(double), 2500);
                     RecreateMatrix(picture, ptr, im, iM, jm, jM);
                     *(pAllChar+l) = ptr;
                 }
