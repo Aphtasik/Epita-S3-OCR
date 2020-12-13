@@ -31,8 +31,8 @@ int main()
     blackAndWhite(image);
     struct Matrix matrix = SurfaceToMatrix(image);
 
-    Network *net = initNet(2500, 150, 62);
-    net->Numpattern = 62;
+    //Network *net = initNet(2500, 150, 62);
+    Network *net = OpenNr("TrainingData");
     double **pAllChar = ReconstructTextTraining(matrix);
 
     //TRAINING
@@ -43,19 +43,19 @@ int main()
         expected[i][i] = 1.0;
     }
 
-    trainNetwork(net, 200, 0.3, 0.9, pAllChar, expected);
-    saveNr(net, "TrainingData");
+    trainNetwork(net, 200, 0.3, 0.9, pAllChar, expected, 62);
+    //saveNr(net, "TrainingData");
 
     for(int i = 0; i < 68; i++)
     {
         free(expected[i]);
     }
-    free(expected);*/
+    free(expected);
 
 
     //TEST reconstruct
-    Network *net = OpenNr("TrainingData");
-    ReconstructText(matrix, net);
+    /*Network *net = OpenNr("TrainingData");
+    ReconstructText(matrix, net);*/
 
 
 
