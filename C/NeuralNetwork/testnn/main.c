@@ -5,7 +5,7 @@
 int main()//int argc, char const *argv[])
 {
 	Network *net = initNet(900,150,68);
-	net->Numpattern = 68;
+	//Network *net = OpenNr("nn");
 	/*
 	net->Numpattern = 4;
 	double **input  = malloc(sizeof(double *) * net->Numpattern);
@@ -48,8 +48,8 @@ int main()//int argc, char const *argv[])
 		expected[i][i] = 1.0;
 	}
 	
-	trainNetwork(net, 1000, 0.1, 0.9, input, expected);
-    printNr(net);
+	//trainNetwork(net, 10, 0.1, 0.9, input, expected, 68);
+    //printNr(net);
 
     double **inputest = malloc(sizeof(double*));
     inputest[0] = malloc(sizeof(double) * 2);

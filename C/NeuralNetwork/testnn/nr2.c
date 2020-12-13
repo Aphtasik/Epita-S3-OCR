@@ -45,11 +45,7 @@ void printNr(Network *net){
 
 Network *OpenNr(char *filePath){
 	Network *net = malloc(sizeof(Network));
-	FILE *nr = fopen(filePath, "r");
-	if(nr == NULL){
-		net->NumInput = -1;
-		return net;
-	}
+	FILE *nr = fopen(filePath, "r");	
 	fscanf(nr, "%f\n", &net->Error);
 	fscanf(nr, "%d\n", &net->Numpattern);
 	fscanf(nr, "%d\n", &net->NumHidden);
@@ -172,7 +168,7 @@ Network *initNet(size_t nbi, size_t nbh, size_t nbo){
 	net->NumInput  = nbi;
 	net->NumOutput = nbo;
 	net->NumHidden = nbh;
-	
+	net->Numpattern = 1;
 	double smallWeight = 0.5;
 
 	net->deltaWeightLH = malloc(sizeof(double *) * (net->NumInput + 1));
@@ -218,7 +214,8 @@ void printList(double *l, int len){
 }
 
 void trainNetwork(Network *net, size_t _epoch, double eta,\
-	double alpha, double **input, double **target){
+	double alpha, double **input, double **target, int Numpattern){
+    net->Numpattern    = Numpattern;
 	net->ranpat 	   = malloc(sizeof(double) * net->Numpattern);
 	net->SumH          = malloc(sizeof(double *) * net->Numpattern);
 	net->SumO          = malloc(sizeof(double *) * net->Numpattern);
@@ -369,12 +366,10 @@ for (int l = 0; l < net->Numpattern; l++)
 	Input[0] = input;
 	double **target = malloc(sizeof(double *));
 	target[0] = calloc(sizeof(double), net->NumOutput);
-	net->Numpattern = 1;
-	trainNetwork(net, 1, 0.01, 0.9, Input, target);
+	trainNetwork(net, 1, 0.01, 0.9, Input, target, 1);
 	printList(net->Output[0], net->NumOutput);
 	free(target[0]);
 	free(target);
-	free(Input);
 
 	int ires = getPos(net);
 	char alphabet[62] = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";

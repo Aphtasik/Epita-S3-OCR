@@ -39,7 +39,7 @@ char PredictChar(Network *net, double *input);
 void trainNetFinal(Network *net);
 
 void trainNetwork(Network *net, size_t _epoch, double eta,\
-	double alpha, double **input, double **target);
+	double alpha, double **input, double **target, int Numpattern);
 
 Network *OpenNr(char *filePath);
 
