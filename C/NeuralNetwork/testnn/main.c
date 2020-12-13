@@ -4,8 +4,8 @@
 
 int main()//int argc, char const *argv[])
 {
-	Network *net = initNet(900,150,68);
-	//Network *net = OpenNr("nn");
+	//Network *net = initNet(900,150,68);
+	Network *net = OpenNr("nn");
 	/*
 	net->Numpattern = 4;
 	double **input  = malloc(sizeof(double *) * net->Numpattern);
@@ -48,17 +48,17 @@ int main()//int argc, char const *argv[])
 		expected[i][i] = 1.0;
 	}
 	
-	//trainNetwork(net, 10, 0.1, 0.9, input, expected, 68);
+	trainNetwork(net, 10, 0.1, 0.9, input, expected, 68);
     //printNr(net);
-
+	saveNr(net,"nn");
     double **inputest = malloc(sizeof(double*));
     inputest[0] = malloc(sizeof(double) * 2);
     inputest[0][0] = 0;
     inputest[0][1] = 1;
 
-    char x = PredictChar(net,input[0]);
-	printf("%c", x);
-    freeNetwork(net);
+    //char x = PredictChar(net,input[0]);
+	//printf("%c", x);
+    //freeNetwork(net);
 
     for (size_t i = 0; i < 68; i++)
     {

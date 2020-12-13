@@ -30,9 +30,9 @@ typedef struct Network{
 	double *BiasO; //tableau de biais de l'Output
 	
 } Network;
-/*
+
 Network *load_nn(char *filepath);
-*/
+
 Network *init_nn(int nbI, int nbH, int nbO);
 
 void free_nn();

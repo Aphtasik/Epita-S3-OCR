@@ -67,8 +67,8 @@ Network *OpenNr(char *filePath){
 		net->deltaWeightHO[k] = malloc(sizeof(double) * net->NumOutput);
 		net->WeightHO[k]      = malloc(sizeof(double) * net->NumOutput);
 	}
-	for(int i = 0; i < net->NumOutput  + 1; i++){
-		for(int j = 0; j < net->NumHidden;j++){
+	for(int i = 0; i < net->NumOutput +1; i++){
+		for(int j = 0; j < net->NumHidden ;j++){
 			fscanf(nr,"%lf\n", &net->deltaWeightHO[j][i]);
 			fscanf(nr,"%lf\n", &net->WeightHO[j][i]);
 		}
@@ -120,12 +120,12 @@ void saveNr(Network *net, char *filePath){
 
 	for(int i = 0; i < net->NumInput  + 1; i++){
 		for(int j = 0; j < net->NumHidden;j++){
-			fprintf(nr,"%lf\n", net->deltaWeightLH[i][j]);
-			fprintf(nr,"%lf\n", net->WeightLH[i][j]);
+			fprintf(nr,"%f\n", net->deltaWeightLH[i][j]);
+			fprintf(nr,"%f\n", net->WeightLH[i][j]);
 		}
 	}
-	for(int i = 0; i < net->NumOutput  + 1; i++){
-		for(int j = 0; j < net->NumHidden;j++){
+	for(int i = 0; i < net->NumOutput +1 ; i++){
+		for(int j = 0; j < net->NumHidden ;j++){
 			fprintf(nr,"%f\n", net->deltaWeightHO[j][i]);
 			fprintf(nr,"%f\n", net->WeightHO[j][i]);
 		}

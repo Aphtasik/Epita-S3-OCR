@@ -45,7 +45,7 @@ void free_nn(Network *net){
 	free(net);
 }
 
-// save the neural network component in a text file
+// save the neural network components in a text file
 void save_nn(Network *net, char* filepath){
 	FILE *nr = fopen(filepath, "w+");
 	if(nr == NULL){
@@ -141,6 +141,7 @@ Network *load_nn(char* filepath){
 	return net;
 }
 
+//print all the component of the neural network, debugging purposes
 void print_nn(Network *net){
 
     printf("\n\nWeightIH: \n");
@@ -189,7 +190,7 @@ void print_nn(Network *net){
 }
 
 
-// initialize a neural network
+// initialize a neural network with empty values
 Network *init_nn(int nbI, int nbH, int nbO){
 
 	Network *net = malloc(sizeof(Network));
@@ -294,61 +295,52 @@ void forward(Network *net ,double *input){
 		
 }
 
-//This function compute the gradients of all weights and put it into the grad arrays of the network
+//This function compute the gradients of all weights and put it into the gradW arrays of the network
 void backpropW(Network *net, double *expected){
 
-	for (int k = 0; k < net->NumOutput; k++)
-	{
+	for (int k = 0; k < net->NumOutput; k++){
 		net->Error += (net->Output[k] - expected[k]) * (net->Output[k] - expected[k]);
 	}
-
+	//derivative of cost according to the answer of the layer input->hidden
 	double *dCawHO = calloc(sizeof(double), net->NumOutput);
+	//derivative of answer according to sum product of the layer input->hidden
 	double *dazwHO = calloc(sizeof(double), net->NumOutput);
+	//derivative of sum product according to the weights of the layer input->hidden
 	double *dzwWHO = calloc(sizeof(double), net->NumHidden);
 
 	double *dCawIH = calloc(sizeof(double), net->NumHidden);
 	double *dazwIH = calloc(sizeof(double), net->NumHidden);
 	double *dzwWIH = calloc(sizeof(double), net->NumInput);
-
-	for (int k = 0; k < net->NumOutput; k++)
-	{
+	for (int k = 0; k < net->NumOutput; k++){
 		dCawHO[k] = 2* (net->Output[k] - expected[k]);
 		dazwHO[k] = dsigmoid(net->Z2[k]);
 	}
-	for (int j = 0; j < net->NumHidden; j++)
-	{
+
+	for (int j = 0; j < net->NumHidden; j++){
 		dzwWHO[j] = net->A1[j];
 	}
 
-	for ( int k = 0; k < net->NumOutput; k++)
-	{
-		for (int j = 0; j < net->NumOutput; j++)
-		{
+	for ( int k = 0; k < net->NumOutput; k++){
+		for (int j = 0; j < net->NumOutput; j++){
 			net->GradWeightHO[j][k] = dCawHO[k] * dazwHO[k] * dzwWHO[j];
 		}		
 	}
 	
-	for (int j = 0; j < net->NumHidden; j++)
-	{
-		for (int k = 0; k < net->NumOutput; k++)
-		{
+	for (int j = 0; j < net->NumHidden; j++){
+		for (int k = 0; k < net->NumOutput; k++){
 			dCawIH[j] += net->WeightHO[j][k] * dsigmoid(net->Z2[k]) * 2*(net->Output[k] - expected[k]);
 		}
 		
 		dazwIH[j] = dsigmoid(net->Z1[j]);
 	}
-	for (int i = 0; i < net->NumInput; i++)
-	{
+	for (int i = 0; i < net->NumInput; i++){
 		dzwWIH[i] = net->Input[i];
 	}
 
-	for ( int j = 0; j < net->NumHidden; j++)
-	{
-		for (int i = 0; i < net->NumInput; i++)
-		{
+	for ( int j = 0; j < net->NumHidden; j++){
+		for (int i = 0; i < net->NumInput; i++){
 			net->GradWeightIH[i][j] = dCawIH[j] * dazwIH[j] * dzwWIH[i];
 		}
-		
 	}
 	free(dCawHO);
 	free(dazwHO);
@@ -399,6 +391,11 @@ double* backpropB(Network *net, double *expected){
 	return gradB;	
 }
 
+/*
+this function update all weights and biases according to the gradient array
+it is a stochastic gradient descent implementation because weight and biases are 
+updated in each iteration
+*/
 void apply_changes(Network *net, double eta, double *gradB){
 	for (int k = 0; k < net->NumOutput; k++){
 		for (int j = 0; j < net->NumHidden; j++)
@@ -437,6 +434,7 @@ void apply_changes(Network *net, double eta, double *gradB){
 
 }
 
+//softmax function to have a better result at the output
 double *softmax(double *values, int NumOutput){
 	double *output = calloc(sizeof(double),NumOutput);
 	double sum = 0;
@@ -450,11 +448,12 @@ double *softmax(double *values, int NumOutput){
 	return output;	
 }
 
-//function that train the neural network [epoch] times
+//function that train the neural network [epoch] times, save it and free it
 void train(Network *net, int epoch, double eta, int nbtrainingdata, double **input, double **expected,char *filepath, int print){
 	net->NbTrainingData = nbtrainingdata;
 	for (int x = 0; x < epoch; x++)
 	{
+		//index of training to train ramdomly #BUG: don't necessary train through all the dataset
 		int y = rand()%net->NbTrainingData;
 		forward(net, input[y]);
 		double *gradB = backpropB(net, expected[y]);
@@ -469,6 +468,7 @@ void train(Network *net, int epoch, double eta, int nbtrainingdata, double **inp
 	save_nn(net, filepath);
 }
 
+//training only one data, test purposes only
 void train1data(Network *net, int epoch, double eta, double *input, double *expected){
 
 	for (int x = 0; x <= epoch; x++)
@@ -482,6 +482,7 @@ void train1data(Network *net, int epoch, double eta, double *input, double *expe
 	
 }
 
+//prediction function that compute the neural network and return the guessed character
 char predictchar(Network *net, double *input){
 	char alphabet[68] = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!.?:()";
 	forward(net, input);
