@@ -3,7 +3,7 @@
 
 #include<stdio.h>
 #include"../Tools/Tools.h"
-#include "../NeuralNetwork/neural_network.h"
+#include "../NeuralNetwork/testnn/nr2.h"
 #include"Segmentation.h"
 
 double ** ReconstructTextTraining(struct Matrix picture);

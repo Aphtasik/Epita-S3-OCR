@@ -3,7 +3,7 @@
 
 #include<stdio.h>
 #include"../Tools/Tools.h"
-#include "../NeuralNetwork/neural_network.h"
+#include "../NeuralNetwork/testnn/nr2.h"
 
 void HorizontalProjection(struct Matrix matrix, int* pList);
 void VerticalProjection(struct Matrix matrix, int minIndex, int maxIndex, int* pList);

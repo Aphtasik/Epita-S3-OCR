@@ -2,7 +2,7 @@
 #include"Segmentation_Rebuild/trainingSegmentation.h"
 #include"Segmentation_Rebuild/Segmentation.h"
 #include"Tools/Tools.h"
-#include"NeuralNetwork/neural_network.h"
+#include"NeuralNetwork/testnn/nr2.h"
 #include "PreProcess/pretraitement.h"
 //#include"PreProcess/Rotate.h"
 
@@ -24,7 +24,6 @@ int main()
     ChangeEltInMatrix(matrix, 1, 1, 1);
 
     PrintMatrix(matrix);
-    Network *net = init_nn(900, 150, 68);
     printf("\n\n");*/
 
     SDL_Surface *image = load_image("../TestPics/training_01.jpg");
@@ -32,21 +31,10 @@ int main()
     blackAndWhite(image);
     struct Matrix matrix = SurfaceToMatrix(image);
 
-    Network *net = init_nn(900, 150, 68);
+    Network *net = initNet(2500, 150, 62);
+    net->Numpattern = 62;
+    double **pAllChar = ReconstructTextTraining(matrix);
 
-    /*double **pAllChar = ReconstructTextTraining(matrix);
-    double **input = calloc(sizeof(double*), 68);
-    for(int i = 0; i < 68; i++)
-    {
-        input[i] = calloc(sizeof(double), 900);
-        for(int j = 0; j < 900; j++)
-        {
-            input[i][j] = (double)(rand()%2);
-        }
-        
-    }
-
-    Network *net = load_nn("TrainingData");
     //TRAINING
     double **expected = malloc(sizeof(double*)*68);
     for(int i = 0; i < 68; i++)
@@ -55,8 +43,8 @@ int main()
         expected[i][i] = 1.0;
     }
 
-    
-    //train(net, 1000, 0.3,68, input, expected, "TrainingData", 1);
+    trainNetwork(net, 200, 0.3, 0.9, pAllChar, expected);
+    saveNr(net, "TrainingData");
 
     for(int i = 0; i < 68; i++)
     {
@@ -66,15 +54,13 @@ int main()
 
 
     //TEST reconstruct
-    //ReconstructText(matrix, net);
-
-
-
+    Network *net = OpenNr("TrainingData");
+    ReconstructText(matrix, net);
 
 
 
     //PrintMatrix(matrix);
-    printf("\n");
+    /*printf("\n");
 
     int *pProjH = malloc(sizeof(int)*matrix.rows);
     int *pProjV = malloc(sizeof(int)*matrix.columns);
@@ -150,5 +136,5 @@ int main()
     printf("\n");
 
     //TEST reconstruct
-    ReconstructText(matrix, net);
+    ReconstructText(matrix, net);*/
 }

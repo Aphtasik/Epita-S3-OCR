@@ -167,7 +167,6 @@ int getPos(Network *net){
 }
 
 Network *initNet(size_t nbi, size_t nbh, size_t nbo){
-    srand(time(NULL));
 	Network *net   = malloc(sizeof(Network));
 	net->Error     = 0;
 	net->NumInput  = nbi;
@@ -217,6 +216,7 @@ void printList(double *l, int len){
 	}
 	printf("\n");
 }
+
 void trainNetwork(Network *net, size_t _epoch, double eta,\
 	double alpha, double **input, double **target){
 	net->ranpat 	   = malloc(sizeof(double) * net->Numpattern);
