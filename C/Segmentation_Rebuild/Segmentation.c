@@ -273,7 +273,7 @@ void ReconstructText(struct Matrix picture, Network *net)
 
                     double *ptr = calloc(sizeof(double), 2500);
                     RecreateMatrix(picture, ptr, im, iM, jm, jM);
-                    char c = PredictChar(net, ptr);
+                    char c = predictchar(net, ptr);
                     fprintf(fptr, "%c", c);
                     free(ptr);
                 }

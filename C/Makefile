@@ -6,16 +6,16 @@ LDLIBS= `pkg-config --libs sdl` -lSDL_image -lm
 
 all: $(EXEC)
 
-main: Segmentation_Rebuild/Segmentation.o Segmentation_Rebuild/trainingSegmentation.o NeuralNetwork/testnn/nr2.o Tools/Tools.o PreProcess/pretraitement.o main.o
+main: Segmentation_Rebuild/Segmentation.o Segmentation_Rebuild/trainingSegmentation.o NeuralNetwork/neural_network.o Tools/Tools.o PreProcess/pretraitement.o main.o
 	$(CC) $^ -o $@ $(LDLIBS)
 
-main.o: main.c Segmentation_Rebuild/Segmentation.h NeuralNetwork/testnn/nr2.h Tools/Tools.h PreProcess/pretraitement.h
+main.o: main.c Segmentation_Rebuild/Segmentation.h NeuralNetwork/neural_network.h Tools/Tools.h PreProcess/pretraitement.h
 	$(CC) -c $< $(CFLAGS) 
 
-Segmentation.o: Segmentation_Rebuild/Segmentation.c Segmentation_Rebuild/Segmentation.h NeuralNetwork/testnn/nr2.h Tools/Tools.h
+Segmentation.o: Segmentation_Rebuild/Segmentation.c Segmentation_Rebuild/Segmentation.h NeuralNetwork/neural_network.h Tools/Tools.h
 	$(CC) -c $< $(CFLAGS)
 
-trainingSegmentation.o: Segmentation_Rebuild/trainingSegmentation.c Segmentation_Rebuild/trainingSegmentation.h Segmentation_Rebuild/Segmentation.c Segmentation_Rebuild/Segmentation.h NeuralNetwork/testnn/nr2.h Tools/Tools.h
+trainingSegmentation.o: Segmentation_Rebuild/trainingSegmentation.c Segmentation_Rebuild/trainingSegmentation.h Segmentation_Rebuild/Segmentation.c Segmentation_Rebuild/Segmentation.h NeuralNetwork/neural_network.h Tools/Tools.h
 	$(CC) -c $< $(CFLAGS)
 	
 Tools.o: Tools/Tools.c

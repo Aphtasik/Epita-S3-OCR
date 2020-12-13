@@ -2,7 +2,7 @@
 #include"Segmentation_Rebuild/trainingSegmentation.h"
 #include"Segmentation_Rebuild/Segmentation.h"
 #include"Tools/Tools.h"
-#include"NeuralNetwork/testnn/nr2.h"
+#include"NeuralNetwork/neural_network.h"
 #include "PreProcess/pretraitement.h"
 //#include"PreProcess/Rotate.h"
 
@@ -31,9 +31,9 @@ int main()
     blackAndWhite(image);
     struct Matrix matrix = SurfaceToMatrix(image);
 
-    //Network *net = initNet(2500, 150, 62);
-    Network *net = OpenNr("TrainingData");
-    double **pAllChar = ReconstructTextTraining(matrix);
+    //Network *net = init_nn(2500, 150, 62);
+    Network *net = load_nn("TrainingData");
+    /*double **pAllChar = ReconstructTextTraining(matrix);
 
     //TRAINING
     double **expected = malloc(sizeof(double*)*68);
@@ -43,14 +43,13 @@ int main()
         expected[i][i] = 1.0;
     }
 
-    //trainNetwork(net, 10, 0.3, 0.9, pAllChar, expected, 62);
-    //saveNr(net, "TrainingData");
+    //train(net, 10, 0.3, 62, pAllChar, expected, "TrainingData", 1);
 
     for(int i = 0; i < 68; i++)
     {
         free(expected[i]);
     }
-    free(expected);
+    free(expected);*/
 
 
     //TEST reconstruct
@@ -133,8 +132,8 @@ int main()
     struct Matrix charsMatrix = CreateMatrix(charElt,2);
     ijMatrix(pProjV, charsMatrix, matrix.columns, charSize);
     PrintMatrix(charsMatrix);
-    printf("\n");
+    printf("\n");*/
 
     //TEST reconstruct
-    ReconstructText(matrix, net);*/
+    ReconstructText(matrix, net);
 }
