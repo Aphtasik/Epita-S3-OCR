@@ -374,7 +374,7 @@ for (int l = 0; l < net->Numpattern; l++)
 	free(target);
 
 	int ires = getPos(net);
-	char *alphabet[68] = {"0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!.?()"};
+	char *alphabet[62] = {"0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"};
 	return alphabet[ires]; 
 }
 
