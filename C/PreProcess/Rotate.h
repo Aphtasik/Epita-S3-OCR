@@ -6,11 +6,11 @@
 #include "SDL/SDL_image.h"
 #include <stdlib.h>
 #include <SDL.h>
-#include "pixel_operations.h"
+#include "pretraitement.h"
 #include <math.h>
 
 SDL_Surface* Rotation(SDL_Surface* origine, float angle);
-void HorizontalProjection(SDL_Surface* image, int* pList);
+void HorizontalProjection2(SDL_Surface* image, int* pList);
 float Moyenne(SDL_Surface* image, int* pList);
 float Variance(SDL_Surface* image, int* pList);
 int CalculAngle (SDL_Surface* image);

@@ -4,27 +4,13 @@
 #include "SDL/SDL_image.h"
 #include <stdlib.h>
 #include <SDL.h>
-#include "pixel_operations.h"
+#include "pretraitement.h"
 #include <math.h>
 #include "Rotate.h"
 
 
-SDL_Surface* load_image(char *path)
-{
-    SDL_Surface *img;
-
-    // Load an image using SDL_image with format detection.
-    // If it fails, die with an error message.
-    img = IMG_Load(path);
-    if (!img)
-        errx(3, "can't load %s: %s", path, IMG_GetError());
-
-    return img;
-}
-
-
 //I retrieve the number of black pixels on each line
-void HorizontalProjection(SDL_Surface* image, int* pList)
+void HorizontalProjection2(SDL_Surface* image, int* pList)
 {
     int sum;
     Uint32 pixel;
@@ -160,7 +146,7 @@ int CalculAngle (SDL_Surface* image)
 {
   int rows = image->h;
   int *p = malloc(sizeof(int)*rows);
-  HorizontalProjection(image,p);
+  HorizontalProjection2(image,p);
   float Var = Variance(image,p);
   float PrecVar = 0;
   int angle = 0;
@@ -172,7 +158,7 @@ int CalculAngle (SDL_Surface* image)
       int rows = image->h;
       int *p = malloc(sizeof(int)*rows);
       angle -= 1;
-      HorizontalProjection(image,p);
+      HorizontalProjection2(image,p);
       Var = Variance(image,p);
     }
   return angle;

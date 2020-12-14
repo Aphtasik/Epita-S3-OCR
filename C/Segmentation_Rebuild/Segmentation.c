@@ -103,14 +103,16 @@ int CountElt(int matrixLen, int Size, int* pProj)
     int treshold = 1;
     int onSpree = 0;
     int sum = 0;
-    int nbVoid = 0;
+    double nbVoid = 0;
+
+    double sized = (double)Size;
 
     for(int i = 0 ; i < matrixLen ; i++)
     {
         if(onSpree == 0 && *(pProj+i) > treshold)
         {
             onSpree = 1;
-            if(nbVoid >= Size*2)
+            if(nbVoid >= sized/1.2)//TODO:
             {
                 sum++;
             }
@@ -137,16 +139,17 @@ void ijMatrix(int* pProj, struct Matrix lineOrCharMatrix, int matrixLen, int siz
 {   
     int treshold = 1;
     int onSpree = 0;
-    int nbVoid = 0;
-    int indexIList = 0;
+    double nbVoid = 0;
+    int indexIList = 0;  
 
+    double sized = (double)size;
 
     for(int i = 0 ; i < matrixLen ; i++)
     {
         if(onSpree == 0 && *(pProj+i) > treshold)
         {
             onSpree = 1;
-            if(nbVoid >= size*2)
+            if(nbVoid >= sized/1.2)
             {
                 ChangeEltInMatrix(lineOrCharMatrix, indexIList, 0, -1);
                 ChangeEltInMatrix(lineOrCharMatrix, indexIList, 1, -1);
