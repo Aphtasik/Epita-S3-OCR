@@ -79,7 +79,7 @@ SDL_Surface* Rotation(SDL_Surface* origine, float angle)
   double hauteurdest;
  
 /*determines the value in radian of the angle*/
-  angle_radian = -angle * M_PI / 180.0;
+  angle_radian = angle * M_PI / 180.0;
  
 /*to avoid a lot of calls, the values are stored*/
   tcos = cos(angle_radian);
