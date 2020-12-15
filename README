@@ -1,9 +1,15 @@
-Instructions for utilisation:
+Instructions for use:
 - You must put you picture in the "TestPics" folder with the exact name "image.jpg", the format must be jpg. If there is another picture with the same name, delete it.
 - Go in the "C" folder.
 - In a terminal, run the command "make".
 - When it is done, run the command "./main", still in the "C" folder.
 
+
 Where is the result ? :
 - The textfile create is named "OCR" and is located in the "C" folder
-- The Rotated image is located in the "C>PreProcess" folder and named "image_rotattion.jpg"
+- The Rotated image is located in the "C>PreProcess" folder and named "image2_rotate.jpg"
+
+
+How to clean the C folder ? :
+- Run the command "make clean" in the "C" folder to delete all ".o" and ".d" objects in the folder and folder inside.
+- Run the command "make mrpropre" in the "C" folder to delete all ".o" and ".d" objects in the folder and folder inside AND the "./main", the "OCR text file and the "image2_rotate.jpg" picture.
