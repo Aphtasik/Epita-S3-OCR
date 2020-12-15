@@ -15,7 +15,7 @@ int main()
     //Pretraitement (filtre/rotation non utilises sur l'image)
     grayscale(image);
     blackAndWhite(image);
-    SDL_Surface *image3 = filtre(image);
+    //SDL_Surface *image3 = filtre(image);
     //SDL_Surface *image4 = filtre2(image3);
     if((SDL_SaveBMP(Rotation(image, 20), "image2_rotate.jpg")) != 0){
         exit(EXIT_FAILURE);
