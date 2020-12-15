@@ -5,17 +5,23 @@
 #include"NeuralNetwork/neural_network.h"
 #include "PreProcess/pretraitement.h"
 #include "PreProcess/Rotate.h"
-//#include"PreProcess/Rotate.h"
 
 int main()
 {
     //OUVERTURE ET TRAITEMENT
+    //Load de l'image
     SDL_Surface *image = load_image("../TestPics/image.jpg");
+
+    //Pretraitement (filtre/rotation non utilises sur l'image)
     grayscale(image);
     blackAndWhite(image);
+    SDL_Surface *image3 = filtre(image);
+    //SDL_Surface *image4 = filtre2(image3);
     if((SDL_SaveBMP(Rotation(image, 20), "image2_rotate.jpg")) != 0){
         exit(EXIT_FAILURE);
     }
+
+    //Passage de SDL à matrice
     struct Matrix matrix = SurfaceToMatrix(image);
 
 

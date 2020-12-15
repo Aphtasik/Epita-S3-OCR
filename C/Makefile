@@ -21,9 +21,6 @@ trainingSegmentation.o: Segmentation_Rebuild/trainingSegmentation.c Segmentation
 Tools.o: Tools/Tools.c
 	$(CC) -c $< $(CFLAGS)
 
-pixel_operations.o: PreProcess/pixel_operations.c PreProcess/pixel_operations.h Tools/Tools.h
-	$(CC) -c $< $(CFLAGS)
-
 pretraitement.o: PreProcess/pretraitement.c PreProcess/pixel_operations.h
 	$(CC) -c $< $(CFLAGS)
 

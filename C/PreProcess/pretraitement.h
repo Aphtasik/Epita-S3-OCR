@@ -18,6 +18,7 @@ void histo1(SDL_Surface *surface, int L[], int width, int height);
 int otsu_threshold(SDL_Surface *surface, int width, int height);
 void blackAndWhite(SDL_Surface *surface);
 SDL_Surface* filtre(SDL_Surface *surface);
+SDL_Surface* filtre2(SDL_Surface *image);
 struct Matrix SurfaceToMatrix(SDL_Surface *image);
 
 #endif
