@@ -1,3 +1,9 @@
+Instructions for utilisation:
+- You must put you picture in the "TestPics" folder with the exact name "image.jpg", the format must be jpg. If there is another picture with the same name, delete it.
+- Go in the "C" folder.
+- In a terminal, run the command "make".
+- When it is done, run the command "./main", still in the "C" folder.
 
-
-pour la compilation du réseau de neurone: make dans le dossier NeuralNetwork, 2 tests sur le xor son présent dans le main.c. il manque une fonction shuffle et une implémentation en mini batch pour un apprentissage efficace.
+Where is the result ? :
+- The textfile create is named "OCR" and is located in the "C" folder
+- The Rotated image is located in the "C>PreProcess" folder and named "image_rotattion.jpg"
